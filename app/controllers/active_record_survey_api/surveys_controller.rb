@@ -2,14 +2,23 @@ require_dependency "active_record_survey_api/application_controller"
 
 module ActiveRecordSurveyApi
 	class SurveysController < ApplicationController
-		def index
-			@surveys = ::ActiveRecordSurvey::Survey.all
+		include Concerns::Controllers::Surveys
 
-			render json: @surveys, each_serializer: SurveySerializer
+		def index
+			@surveys = all_surveys
+
+			render json: @surveys, each_serializer: SurveySerializer, meta: { total: @surveys.length }
 		end
 
 		def show
-			@survey = ::ActiveRecordSurvey::Survey.find(params[:id])
+			@survey = survey_by_id(params[:id])
+
+			render json: @survey, serializer: SurveySerializer
+		end
+
+		def create
+			@survey = new_survey(survey_params)
+			@survey.save
 
 			render json: @survey, serializer: SurveySerializer
 		end

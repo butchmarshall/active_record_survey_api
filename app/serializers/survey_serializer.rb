@@ -1,3 +1,5 @@
 class SurveySerializer < ActiveModel::Serializer
-	attributes :id
+	attributes :id, :name
+
+	has_many :node_maps
 end

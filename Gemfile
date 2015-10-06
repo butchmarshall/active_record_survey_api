@@ -14,3 +14,5 @@ gemspec
 # gem 'byebug', group: [:development, :test]
 
 gem 'minitest', group: [:test]
+
+#gem "active_record_survey", :path => "../active_record_survey"
