@@ -1,29 +1,27 @@
 module ActiveRecordSurveyApi
 	module Concerns
 		module Controllers
-			module Questions
+			module NodeMaps
 				extend ActiveSupport::Concern
 
-				def all_questions
-					all_questions = []
-					all_questions = @survey.questions if !@survey.nil?
-					all_questions
+				def all_node_maps
+					@survey.node_maps
 				end
 
-				def question_by_id(id)
-					ActiveRecordSurvey::Node::Question.find(id)
+				def node_map_by_id(id)
+					ActiveRecordSurvey::NodeMap.find(id)
 				end
 
-				def new_question(params)
-					ActiveRecordSurvey::Node::Question.new(question_params)
+				def new_node_map(params)
+					ActiveRecordSurvey::NodeMap.new(node_map_params)
 				end
 
 				def json_params
 					ActionController::Parameters.new(JSON.parse(request.body.read))
 				end
 
-				def question_params
-					json_params.require(:question).permit(:text, nodes: [])
+				def node_map_params
+					json_params.require(:node_map).permit(:text, nodes: [])
 				end
 
 				included do

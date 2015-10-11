@@ -27,8 +27,9 @@ module ActiveRecordSurveyApi
 				end
 
 				included do
-					before_filter :find_survey
-					before_filter :find_question
+					before_filter :find_survey, :if => proc { |c| params[:survey_id].to_i > 0 }
+					before_filter :find_question, :if => proc { |c| params[:question_id].to_i > 0 }
+					before_filter :find_answer, :if => proc { |c| params[:answer_id].to_i > 0 }
 				end
 
 				def find_survey
@@ -37,6 +38,10 @@ module ActiveRecordSurveyApi
 
 				def find_question
 					self.instance_variable_set "@question", ActiveRecordSurvey::Node::Question.find(params[:question_id])
+				end
+
+				def find_answer
+					self.instance_variable_set "@answer", ActiveRecordSurvey::Node::Answer.find(params[:answer_id])
 				end
 			end
 		end

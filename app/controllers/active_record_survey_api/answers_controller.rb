@@ -25,9 +25,8 @@ module ActiveRecordSurveyApi
 		end
 
 		def create
-			@question_node = @question.node_maps.first
 			@answer = new_answer(answer_params)
-			@question.build_answers([@answer], @question_node)
+			@question.build_answer(@answer, @survey)
 			@survey.save
 
 			render json: @answer, serializer: AnswerSerializer

@@ -30,11 +30,38 @@ describe ActiveRecordSurveyApi::QuestionsController, :type => :controller, :ques
 					}
 				}.to_json, header_params
 
-				survey.node_maps.each { |node_map|
-					puts node_map.node.as_json
-				}
+				#survey.node_maps.each { |node_map|
+				#	puts node_map.node.as_json
+				#}
 			end
+		end
+		describe 'GET index' do
+			it 'should get only unique questions for the survey' do
+				survey = ActiveRecordSurvey::Survey.new(:name => "My First Survey")
+				
+				# Question 1
+				q1 = ActiveRecordSurvey::Node::Question.new(:text => "How are you doing today?")
+				q1_a1 = ActiveRecordSurvey::Node::Answer.new(:text => "Great!")
+				q1_a2 = ActiveRecordSurvey::Node::Answer.new(:text => "Good")
+				q1_a3 = ActiveRecordSurvey::Node::Answer.new(:text => "Not Bad")
+				q1_a4 = ActiveRecordSurvey::Node::Answer.new(:text => "Don't ask")
+				nodes = survey.build_question(q1, [q1_a1,q1_a2,q1_a3,q1_a4])
+				survey.save
 
+				header_params = {
+					:HTTP_ACCEPT_LANGUAGE => 'en',
+					:CONTENT_TYPE => 'application/json',
+					:ACCEPT => 'application/json'
+				}
+
+				request.headers[:HTTP_ACCEPT_LANGUAGE] = "es"
+				get :index, {
+					:survey_id => survey.id
+				}, header_params
+
+				puts response.body.as_json
+			end
+		end
 =begin
 		describe 'GET index' do
 			it 'should work for english' do
@@ -95,6 +122,5 @@ describe ActiveRecordSurveyApi::QuestionsController, :type => :controller, :ques
 				puts response.body.inspect
 			end
 =end
-		end
 	end
 end
