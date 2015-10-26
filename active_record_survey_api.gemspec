@@ -9,9 +9,9 @@ Gem::Specification.new do |spec|
 	spec.version     = ActiveRecordSurveyApi::VERSION
 	spec.authors     = ["Butch Marshall"]
 	spec.email       = ["butch.a.marshall@gmail.com"]
-	spec.homepage    = "TODO"
-	spec.summary     = "TODO: Summary of ActiveRecordSurveyApi."
-	spec.description = "TODO: Description of ActiveRecordSurveyApi."
+	spec.homepage    = "https://github.com/butchmarshall/active_record_survey_api"
+	spec.summary     = "API implementation for ActiveRecordSurvey."
+	spec.description = "A minimalist API implementation for ActiveRecordSurvey.  You take care of the details."
 	spec.license     = "MIT"
 
 	spec.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
