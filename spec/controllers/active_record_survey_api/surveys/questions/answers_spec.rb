@@ -12,13 +12,13 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 				question1 = ActiveRecordSurvey::Node::Question.create(
 					:text => "How are you doing today?"
 				)
-				survey.build_question(question1, [])
+				survey.build_question(question1)
 
 				# Question 2
 				question2 = ActiveRecordSurvey::Node::Question.create(
 					:text => "What food do you like?"
 				)
-				survey.build_question(question2, [])
+				survey.build_question(question2)
 
 				survey.save
 

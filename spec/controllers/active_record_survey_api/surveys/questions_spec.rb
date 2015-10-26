@@ -29,23 +29,47 @@ describe ActiveRecordSurveyApi::QuestionsController, :type => :controller, :ques
 						:text => "What is your favorite colour?"
 					}
 				}.to_json, header_params
-
-				#survey.node_maps.each { |node_map|
-				#	puts node_map.node.as_json
-				#}
 			end
 		end
+
 		describe 'GET index' do
 			it 'should get only unique questions for the survey' do
 				survey = ActiveRecordSurvey::Survey.new(:name => "My First Survey")
-				
+
 				# Question 1
 				q1 = ActiveRecordSurvey::Node::Question.new(:text => "How are you doing today?")
 				q1_a1 = ActiveRecordSurvey::Node::Answer.new(:text => "Great!")
 				q1_a2 = ActiveRecordSurvey::Node::Answer.new(:text => "Good")
 				q1_a3 = ActiveRecordSurvey::Node::Answer.new(:text => "Not Bad")
 				q1_a4 = ActiveRecordSurvey::Node::Answer.new(:text => "Don't ask")
-				nodes = survey.build_question(q1, [q1_a1,q1_a2,q1_a3,q1_a4])
+				survey.build_question(q1)
+				q1.build_answer(q1_a1, survey)
+				q1.build_answer(q1_a2, survey)
+				q1.build_answer(q1_a3, survey)
+				q1.build_answer(q1_a4, survey)
+
+				q2 = ActiveRecordSurvey::Node::Question.new(:text => "What are you doing today?")
+				q2_a1 = ActiveRecordSurvey::Node::Answer.new(:text => "Working")
+				q2_a2 = ActiveRecordSurvey::Node::Answer.new(:text => "Playing")
+				q2_a3 = ActiveRecordSurvey::Node::Answer.new(:text => "Don't ask")
+				survey.build_question(q2)
+				q2.build_answer(q2_a1, survey)
+				q2.build_answer(q2_a2, survey)
+				q2.build_answer(q2_a3, survey)
+
+				q3 = ActiveRecordSurvey::Node::Question.new(:text => "Select your favorite foods")
+				q3_a1 = ActiveRecordSurvey::Node::Answer::Boolean.new(:text => "Pizza")
+				q3_a2 = ActiveRecordSurvey::Node::Answer::Boolean.new(:text => "Hamburgers")
+				q3_a3 = ActiveRecordSurvey::Node::Answer::Boolean.new(:text => "Salad")
+				survey.build_question(q3)
+				q3.build_answer(q3_a1, survey)
+				q3.build_answer(q3_a2, survey)
+				q3.build_answer(q3_a3, survey)
+
+				q1_a3.build_link(q2)
+				q1_a2.build_link(q3)
+				q2_a2.build_link(q3)
+
 				survey.save
 
 				header_params = {
@@ -54,7 +78,7 @@ describe ActiveRecordSurveyApi::QuestionsController, :type => :controller, :ques
 					:ACCEPT => 'application/json'
 				}
 
-				request.headers[:HTTP_ACCEPT_LANGUAGE] = "es"
+				request.headers[:HTTP_ACCEPT_LANGUAGE] = "en"
 				get :index, {
 					:survey_id => survey.id
 				}, header_params

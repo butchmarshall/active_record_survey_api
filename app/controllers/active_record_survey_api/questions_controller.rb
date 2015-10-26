@@ -26,7 +26,7 @@ module ActiveRecordSurveyApi
 
 		def create
 			@question = new_question(question_params)
-			@survey.build_question(@question, [])
+			@survey.build_question(@question)
 			@survey.save
 
 			render json: @question, serializer: QuestionSerializer

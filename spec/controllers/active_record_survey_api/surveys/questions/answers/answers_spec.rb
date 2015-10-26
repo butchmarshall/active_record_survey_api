@@ -11,7 +11,7 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 				question = ActiveRecordSurvey::Node::Question.create(
 					:text => "What food do you like?"
 				)
-				survey.build_question(question, [])
+				survey.build_question(question)
 
 				survey.save
 

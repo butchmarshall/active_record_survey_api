@@ -15,6 +15,12 @@
 # The `.rspec` file also contains a few flags that are not defaults but that
 # users commonly want.
 #
+require 'factory_girl'
+
+require_relative '../spec/factories/active_record_survey/survey'
+require_relative '../spec/factories/active_record_survey/node/question'
+require_relative '../spec/factories/active_record_survey/node/answer'
+
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
 	# rspec-expectations config goes here. You can use an alternate
