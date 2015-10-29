@@ -24,6 +24,13 @@ module ActiveRecordSurveyApi
 			render json: @question, serializer: QuestionSerializer
 		end
 
+		def update
+			@question = question_by_id(params[:id])
+			@question.update_attributes(question_params)
+
+			render json: @question, serializer: QuestionSerializer
+		end
+
 		def create
 			@question = new_question(question_params)
 			@survey.build_question(@question)

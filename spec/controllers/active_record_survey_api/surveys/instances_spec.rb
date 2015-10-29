@@ -23,7 +23,7 @@ describe ActiveRecordSurveyApi::InstancesController, :type => :controller, :inst
 	end
 
 	describe 'PUT update/:id' do
-		it 'should bulk update instance responses', :focus => true do
+		it 'should bulk update instance responses', :focus_broken => true do
 			survey = FactoryGirl.build(:basic_survey)
 			survey.save
 
@@ -52,7 +52,7 @@ describe ActiveRecordSurveyApi::InstancesController, :type => :controller, :inst
 					:instance_nodes_attributes => [
 						{ :active_record_survey_node_id => 317 },
 						{ :active_record_survey_node_id => 319 },
-						#{ :active_record_survey_node_id => 133 }
+						{ :active_record_survey_node_id => 323 },
 					]
 				}
 			}.to_json, header_params
@@ -61,12 +61,24 @@ describe ActiveRecordSurveyApi::InstancesController, :type => :controller, :inst
 			{
 				:instance => {
 					:instance_nodes_attributes => [
-						{ :active_record_survey_node_id => 317 },
-						{ :active_record_survey_node_id => 319 },
-						#{ :active_record_survey_node_id => 133 }
+						{ :active_record_survey_node_id => 321 },
+						{ :active_record_survey_node_id => 323 },
 					]
 				}
 			}.to_json, header_params
+
+			put :update,
+			{
+				:instance => {
+					:instance_nodes_attributes => [
+						{ :active_record_survey_node_id => 321 },
+						{ :active_record_survey_node_id => 323 },
+						{ :active_record_survey_node_id => 322 },
+					]
+				}
+			}.to_json, header_params
+
+			#puts response.body.inspect
 		end
 	end
 end

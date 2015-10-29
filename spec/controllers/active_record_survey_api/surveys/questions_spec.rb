@@ -3,6 +3,64 @@ require 'spec_helper'
 describe ActiveRecordSurveyApi::QuestionsController, :type => :controller, :questions_api => true do
 	routes { ActiveRecordSurveyApi::Engine.routes }
 
+	before(:each) do
+		request.headers[:HTTP_ACCEPT_LANGUAGE] = "en"
+		@header_params = {
+			:CONTENT_TYPE => 'application/json',
+			:ACCEPT => 'application/json'
+		}
+	end
+
+	describe 'translation', :focus => true do
+		context 'when english' do
+			it 'should translate to french' do
+				survey = ActiveRecordSurvey::Survey.create(:name => "Survey")
+				q1 = ActiveRecordSurvey::Node::Question.new(:text => "How are you today?")
+				q1.save
+	
+				# Create two questions in english
+				request.headers[:HTTP_ACCEPT_LANGUAGE] = :fr
+
+				put :update,
+				{
+					:question => {
+						:text => "Comment allez-vous aujourd'hui?"
+					}
+				}.to_json, @header_params.merge(:id => q1.id)
+
+				q1.reload
+
+				expect(q1.translations.collect { |i|
+					{ :text => i.text, :locale => i.locale }
+				}.as_json).to eq([{"text"=>"How are you today?", "locale"=>"en"}, {"text"=>"Comment allez-vous aujourd'hui?", "locale"=>"fr"}])
+			end
+
+			it 'should should update the english' do
+				I18n.locale = :en
+
+				survey = ActiveRecordSurvey::Survey.create(:name => "Survey")
+				q1 = ActiveRecordSurvey::Node::Question.new(:text => "How are you today?")
+				q1.save
+
+				# Create two questions in english
+				request.headers[:HTTP_ACCEPT_LANGUAGE] = :en
+
+				put :update,
+				{
+					:question => {
+						:text => "How are you doing today?"
+					}
+				}.to_json, @header_params.merge(:id => q1.id)
+
+				q1.reload
+
+				expect(q1.translations.collect { |i|
+					{ :text => i.text, :locale => i.locale }
+				}.as_json).to eq([{"text"=>"How are you doing today?", "locale"=>"en"}])
+			end
+		end
+	end
+
 	describe 'When creating a new survey' do
 		describe 'POST create' do
 			it 'should work for english' do

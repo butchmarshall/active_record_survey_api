@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
 	spec.add_dependency "rails", "~> 4.2.4"
 	spec.add_dependency "active_model_serializers" , "0.10.0.rc3"
 	spec.add_dependency "active_record_survey"
-	spec.add_dependency "globalize"
+	spec.add_dependency "globalize", "> 4"
 	spec.add_dependency "http_accept_language"
 
 	if RUBY_PLATFORM == 'java'
@@ -33,4 +33,5 @@ Gem::Specification.new do |spec|
 	spec.add_development_dependency "rspec-rails"
 	spec.add_development_dependency "factory_girl_rails"
 	spec.add_development_dependency "capybara"
+	spec.add_development_dependency "database_cleaner"
 end

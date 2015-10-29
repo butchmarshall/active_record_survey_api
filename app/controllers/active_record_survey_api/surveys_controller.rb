@@ -16,6 +16,13 @@ module ActiveRecordSurveyApi
 			render json: @survey, serializer: SurveySerializer
 		end
 
+		def update
+			@survey = survey_by_id(params[:id])
+			@survey.update_attributes(survey_params)
+
+			render json: @survey, serializer: SurveySerializer
+		end
+
 		def create
 			@survey = new_survey(survey_params)
 			@survey.save
