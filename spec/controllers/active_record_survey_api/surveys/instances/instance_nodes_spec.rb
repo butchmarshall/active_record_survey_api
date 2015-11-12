@@ -23,7 +23,6 @@ describe ActiveRecordSurveyApi::InstanceNodesController, :type => :controller, :
 			questions = survey.questions
 
 			survey_path = survey.as_map.as_json.first
-			#puts JSON.pretty_generate(survey_path)
 
 			post :create,
 			{
@@ -32,7 +31,9 @@ describe ActiveRecordSurveyApi::InstanceNodesController, :type => :controller, :
 				}
 			}.to_json, header_params
 
-			puts response.body
+			json_body = JSON.parse(response.body)
+
+			expect(json_body["data"]["id"].to_i).to eq(1)
 		end
 	end
 end

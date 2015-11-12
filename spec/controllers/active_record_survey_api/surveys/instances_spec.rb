@@ -3,6 +3,10 @@ require 'spec_helper'
 describe ActiveRecordSurveyApi::InstancesController, :type => :controller, :instances_api => true do
 	routes { ActiveRecordSurveyApi::Engine.routes }
 
+	before(:each) do
+		I18n.locale = :en
+	end
+
 	describe 'CREATE' do
 		it 'should create a new instance' do
 			survey = FactoryGirl.build(:basic_survey)
@@ -22,8 +26,8 @@ describe ActiveRecordSurveyApi::InstancesController, :type => :controller, :inst
 		end
 	end
 
-	describe 'PUT update/:id' do
-		it 'should bulk update instance responses', :focus_broken => true do
+	describe 'PUT update/:id', :focus => true do
+		it 'should bulk update instance responses' do
 			survey = FactoryGirl.build(:basic_survey)
 			survey.save
 
@@ -34,8 +38,6 @@ describe ActiveRecordSurveyApi::InstancesController, :type => :controller, :inst
 				:CONTENT_TYPE => 'application/json',
 				:ACCEPT => 'application/json'
 			}
-
-			#puts JSON.pretty_generate(survey.as_map)
 
 			# Create the instance
 			post :create,
@@ -50,35 +52,39 @@ describe ActiveRecordSurveyApi::InstancesController, :type => :controller, :inst
 			{
 				:instance => {
 					:instance_nodes_attributes => [
-						{ :active_record_survey_node_id => 317 },
-						{ :active_record_survey_node_id => 319 },
-						{ :active_record_survey_node_id => 323 },
+						{ :active_record_survey_node_id => 2 },
+						{ :active_record_survey_node_id => 4 },
+						{ :active_record_survey_node_id => 7 },
 					]
 				}
 			}.to_json, header_params
+			json_body = JSON.parse(response.body)
+
+puts json_body.inspect
 
 			put :update,
 			{
 				:instance => {
 					:instance_nodes_attributes => [
-						{ :active_record_survey_node_id => 321 },
-						{ :active_record_survey_node_id => 323 },
+						{ :active_record_survey_node_id => 5 },
+						{ :active_record_survey_node_id => 7 },
 					]
 				}
 			}.to_json, header_params
+			json_body = JSON.parse(response.body)
 
 			put :update,
 			{
 				:instance => {
 					:instance_nodes_attributes => [
-						{ :active_record_survey_node_id => 321 },
-						{ :active_record_survey_node_id => 323 },
-						{ :active_record_survey_node_id => 322 },
+						{ :active_record_survey_node_id => 11 },
+						{ :active_record_survey_node_id => 12 },
+						{ :active_record_survey_node_id => 8 },
 					]
 				}
 			}.to_json, header_params
+			json_body = JSON.parse(response.body)
 
-			#puts response.body.inspect
 		end
 	end
 end
