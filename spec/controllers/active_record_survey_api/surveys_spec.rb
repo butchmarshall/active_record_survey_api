@@ -22,7 +22,7 @@ describe ActiveRecordSurveyApi::SurveysController, :type => :controller, :survey
 			}.to_json, @header_params.merge(:HTTP_ACCEPT_LANGUAGE => 'en')
 
 			json_body = JSON.parse(response.body)
-puts json_body.inspect
+
 			expect(json_body["data"]["attributes"]["name"]).to eq("API Created Survey")
 		end
 	end

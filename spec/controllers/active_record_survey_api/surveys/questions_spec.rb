@@ -12,6 +12,22 @@ describe ActiveRecordSurveyApi::QuestionsController, :type => :controller, :ques
 		}
 	end
 
+	describe 'GET index' do
+		it 'should retrieve all questions for a survey' do
+			I18n.locale = :en
+
+			survey = FactoryGirl.build(:basic_survey)
+			survey.save
+
+			get :index,
+			{
+			}.to_json, @header_params.merge(:survey_id => survey.id,:HTTP_ACCEPT_LANGUAGE => 'en')
+			json_body = JSON.parse(response.body)
+
+			expect(json_body["meta"]["total"]).to eq(4)
+		end
+	end
+
 	describe 'translation' do
 		context 'when english' do
 			it 'should translate to french' do
@@ -80,8 +96,8 @@ describe ActiveRecordSurveyApi::QuestionsController, :type => :controller, :ques
 				}.to_json, @header_params.merge(:survey_id => survey.id)
 
 				json_body = JSON.parse(response.body)
-				
-				expect(json_body).to eq({"data"=>{"id"=>"1", "type"=>"active_record_survey_node_questions", "attributes"=>{"text"=>"How are you today?"}}})
+
+				expect(json_body).to eq({"data" => {"id"=>"1", "type"=>"questions", "attributes"=>{"text"=>"How are you today?"}, "links"=>{"self"=>"/questions/1"}, "relationships"=>{"answers"=>{"links"=>{"self"=>"/questions/1/relationships/answers", "related"=>"/questions/1/answers"}}}}})
 
 				post :create,
 				{
@@ -92,14 +108,14 @@ describe ActiveRecordSurveyApi::QuestionsController, :type => :controller, :ques
 
 				json_body = JSON.parse(response.body)
 
-				expect(json_body).to eq({"data"=>{"id"=>"2", "type"=>"active_record_survey_node_questions", "attributes"=>{"text"=>"What is your favorite colour?"}}})
-				
+				expect(json_body).to eq({"data"=>{"id"=>"2", "type"=>"questions", "attributes"=>{"text"=>"What is your favorite colour?"}, "links"=>{"self"=>"/questions/2"}, "relationships"=>{"answers"=>{"links"=>{"self"=>"/questions/2/relationships/answers", "related"=>"/questions/2/answers"}}}}})
+
 				survey.reload
 				expect(survey.questions.length).to eq(2)
 			end
 		end
 
-		describe 'GET index' do
+		describe 'GET index', :focus => true do
 			it 'should get only unique questions for the survey in english and french' do
 				I18n.locale = :fr
 
@@ -148,7 +164,7 @@ describe ActiveRecordSurveyApi::QuestionsController, :type => :controller, :ques
 
 				# English request should yield no text!
 				json_body = JSON.parse(response.body)
-				expect(json_body).to eq({"data"=>[{"id"=>"1", "type"=>"active_record_survey_node_questions", "attributes"=>{"text"=>nil}}, {"id"=>"4", "type"=>"active_record_survey_node_questions", "attributes"=>{"text"=>nil}}, {"id"=>"9", "type"=>"active_record_survey_node_questions", "attributes"=>{"text"=>nil}}], "meta"=>{"total"=>3}})
+				expect(json_body).to eq({"data"=>[{"id"=>"1", "type"=>"questions", "attributes"=>{"text"=>nil}, "links"=>{"self"=>"/questions/1"}, "relationships"=>{"answers"=>{"links"=>{"self"=>"/questions/1/relationships/answers", "related"=>"/questions/1/answers"}}}}, {"id"=>"4", "type"=>"questions", "attributes"=>{"text"=>nil}, "links"=>{"self"=>"/questions/4"}, "relationships"=>{"answers"=>{"links"=>{"self"=>"/questions/4/relationships/answers", "related"=>"/questions/4/answers"}}}}, {"id"=>"9", "type"=>"questions", "attributes"=>{"text"=>nil}, "links"=>{"self"=>"/questions/9"}, "relationships"=>{"answers"=>{"links"=>{"self"=>"/questions/9/relationships/answers", "related"=>"/questions/9/answers"}}}}], "meta"=>{"total"=>3}})
 
 				request.headers[:HTTP_ACCEPT_LANGUAGE] = :fr
 				get :index, {
@@ -157,7 +173,7 @@ describe ActiveRecordSurveyApi::QuestionsController, :type => :controller, :ques
 
 				# French request should yield the french text!
 				json_body = JSON.parse(response.body)
-				expect(json_body).to eq({"data"=>[{"id"=>"1", "type"=>"active_record_survey_node_questions", "attributes"=>{"text"=>"How are you doing today?"}}, {"id"=>"4", "type"=>"active_record_survey_node_questions", "attributes"=>{"text"=>"Select your favorite foods"}}, {"id"=>"9", "type"=>"active_record_survey_node_questions", "attributes"=>{"text"=>"What are you doing today?"}}], "meta"=>{"total"=>3}})
+				expect(json_body).to eq({"data"=>[{"id"=>"1", "type"=>"questions", "attributes"=>{"text"=>"How are you doing today?"}, "links"=>{"self"=>"/questions/1"}, "relationships"=>{"answers"=>{"links"=>{"self"=>"/questions/1/relationships/answers", "related"=>"/questions/1/answers"}}}}, {"id"=>"4", "type"=>"questions", "attributes"=>{"text"=>"Select your favorite foods"}, "links"=>{"self"=>"/questions/4"}, "relationships"=>{"answers"=>{"links"=>{"self"=>"/questions/4/relationships/answers", "related"=>"/questions/4/answers"}}}}, {"id"=>"9", "type"=>"questions", "attributes"=>{"text"=>"What are you doing today?"}, "links"=>{"self"=>"/questions/9"}, "relationships"=>{"answers"=>{"links"=>{"self"=>"/questions/9/relationships/answers", "related"=>"/questions/9/answers"}}}}], "meta"=>{"total"=>3}})
 			end
 		end
 	end

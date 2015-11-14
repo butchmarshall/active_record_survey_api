@@ -60,8 +60,6 @@ describe ActiveRecordSurveyApi::InstancesController, :type => :controller, :inst
 			}.to_json, header_params
 			json_body = JSON.parse(response.body)
 
-puts json_body.inspect
-
 			put :update,
 			{
 				:instance => {

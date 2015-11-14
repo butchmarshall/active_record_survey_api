@@ -11,32 +11,5 @@ end
 module ActiveRecordSurveyApi
 	class QuestionsController < ApplicationController
 		include Concerns::Controllers::Questions
-
-		def index
-			@questions = all_questions
-
-			render json: @questions, each_serializer: QuestionSerializer, meta: { total: @questions.length }
-		end
-
-		def show
-			@question = question_by_id(params[:id])
-
-			render json: @question, serializer: QuestionSerializer
-		end
-
-		def update
-			@question = question_by_id(params[:id])
-			@question.update_attributes(question_params)
-
-			render json: @question, serializer: QuestionSerializer
-		end
-
-		def create
-			@question = new_question(question_params)
-			@survey.build_question(@question)
-			@survey.save
-
-			render json: @question, serializer: QuestionSerializer
-		end
 	end
 end

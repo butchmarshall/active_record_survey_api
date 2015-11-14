@@ -1,6 +1,5 @@
 require "http_accept_language"
 require "active_record_survey"
-require "active_model_serializers"
 require "globalize"
 
 require "active_record_survey_api/engine"
@@ -18,6 +17,15 @@ require "active_record_survey_api/models/node_map"
 require "active_record_survey_api/models/node/question"
 require "active_record_survey_api/models/node/answer"
 require "active_record_survey_api/models/instance"
+
+require "active_record_survey_api/serializers/base_serializer"
+require "active_record_survey_api/serializers/answer_serializer"
+require "active_record_survey_api/serializers/instance_serializer"
+require "active_record_survey_api/serializers/instance_node_serializer"
+require "active_record_survey_api/serializers/node_map_serializer"
+require "active_record_survey_api/serializers/node_serializer"
+require "active_record_survey_api/serializers/question_serializer"
+require "active_record_survey_api/serializers/survey_serializer"
 
 module ActiveRecordSurveyApi
 end

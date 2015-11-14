@@ -2,6 +2,16 @@ module ActiveRecordSurveyApi
 	class ApplicationController < ActionController::Base
 		before_filter :set_locale
 
+		def serialize_model(model, options = {})
+			options[:is_collection] = false
+			((options[:serializer]) ? options[:serializer] : JSONAPI::Serializer).serialize(model, options)
+		end
+
+		def serialize_models(models, options = {})
+			options[:is_collection] = true
+			((options[:serializer]) ? options[:serializer] : JSONAPI::Serializer).serialize(models, options)
+		end
+
 		private
 			def set_locale
 				# If a language is sent - it's the preferred language!
