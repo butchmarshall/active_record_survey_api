@@ -7,6 +7,7 @@ require "action_mailer/railtie"
 require "action_view/railtie"
 require "sprockets/railtie"
 # require "rails/test_unit/railtie"
+require "rack/cors"
 
 Bundler.require(*Rails.groups)
 require "active_record_survey_api"
@@ -28,7 +29,16 @@ module TestApp
 		config.i18n.available_locales = [:en, :fr, :de, :es]
 		# Do not swallow errors in after_commit/after_rollback callbacks.
 		config.active_record.raise_in_transactional_callbacks = true
-		config.autoload_paths << Rails.root.join('lib')
+
+		config.autoload_paths += %W(#{config.root}/lib)
+		config.assets.paths << Rails.root.join('vendor', 'assets', 'bower_components')
+
+		config.middleware.insert_before 0, "Rack::Cors" do
+			allow do
+				origins '*'
+				resource '*', :headers => :any, :methods => [:get, :post, :put, :delete, :options], :max_age => 0
+			end
+		end
 	end
 end
 

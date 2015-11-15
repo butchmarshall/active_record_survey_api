@@ -1,13 +1,11 @@
 module ActiveRecordSurveyApi
 	class SurveySerializer < BaseSerializer
 		attribute :name
-		#attribute :links
-	
-		#has_many :node_maps
-		#def links
-		#	{
-		#		"self" => survey_path(object)
-		#	}
-		#end
+
+		has_many :questions
+
+		def self_link
+			url_helpers.survey_path(id)
+		end
 	end
 end

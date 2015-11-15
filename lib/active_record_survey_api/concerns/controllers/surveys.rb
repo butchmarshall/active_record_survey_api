@@ -16,7 +16,14 @@ module ActiveRecordSurveyApi
 		
 					render json: serialize_model(@survey, serializer: ActiveRecordSurveyApi::SurveySerializer)
 				end
+
+				def destroy
+					@survey = survey_by_id(params[:id])
+					@survey.destroy
 		
+					head :no_content
+				end
+
 				def update
 					@survey = survey_by_id(params[:id])
 					@survey.update_attributes(survey_params)

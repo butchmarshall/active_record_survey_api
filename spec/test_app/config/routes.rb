@@ -1,8 +1,5 @@
 Rails.application.routes.draw do
-	mount ActiveRecordSurveyApi::Engine => "/surveys"
+	root 'application#angular'
 
-	resources :surveys do
-		resources :questions do
-		end
-	end
+	mount ActiveRecordSurveyApi::Engine => "/"
 end

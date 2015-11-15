@@ -9,7 +9,7 @@ module ActiveRecordSurveyApi
 		end
 
 		def self_link
-			"/answers/#{id}"
+			url_helpers.answer_path(id)
 		end
 	end
 end

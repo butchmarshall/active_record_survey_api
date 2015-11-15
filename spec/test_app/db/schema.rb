@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151002131904) do
+ActiveRecord::Schema.define(version: 20151114172925) do
 
   create_table "active_record_survey_instance_nodes", force: :cascade do |t|
     t.integer  "active_record_survey_instance_id"
