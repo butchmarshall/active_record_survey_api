@@ -13,26 +13,33 @@ module ActiveRecordSurveyApi
 
 					render json: serialize_model(@instance, serializer: ActiveRecordSurveyApi::InstanceSerializer)
 				end
-		
+
+				def destroy
+					@instance = instance_by_id(params[:id])
+					@instance.destroy
+
+					head :no_content
+				end
+
 				def create
 					@instance = new_instance(instance_params)
 					@instance.save
 
 					render json: serialize_model(@instance, serializer: ActiveRecordSurveyApi::InstanceSerializer)
 				end
-		
+
 				def update
 					@instance = instance_by_id(params[:id])
-		
+
 					update_instance_params = instance_params[:instance]
-		
+
 					# Taking survey with this update - wipe previous entries
 					if update_instance_params[:instance_nodes_attributes].length > 0
 						@instance.instance_nodes.each { |i|
 							i.mark_for_destruction
 						}
 					end
-		
+
 					@instance.update_attributes(update_instance_params)
 
 					render json: serialize_model(@instance, serializer: ActiveRecordSurveyApi::InstanceSerializer)
@@ -42,23 +49,23 @@ module ActiveRecordSurveyApi
 					def instance_by_id(id)
 						ActiveRecordSurvey::Instance.find(id)
 					end
-	
+
 					def new_instance(params)
 						instance = ActiveRecordSurvey::Instance.new(instance_params)
 						instance.survey = @survey
 						instance
 					end
-	
+
 					def json_params
 						i = {}
 						begin
 							i = JSON.parse(request.body.read)
 						rescue Exception => $e
 						end
-	
+
 						ActionController::Parameters.new(i)
 					end
-	
+
 					def instance_params
 						json_params.permit(instance: [instance_nodes_attributes: [:active_record_survey_node_id]]).tap { |i|
 							if i[:instance] && i[:instance][:instance_nodes_attributes]

@@ -1,7 +1,7 @@
 {
   "name": "jquery.api-adapter",
   "main": "dist/jquery.api-adapter.js",
-  "version": "0.0.4",
+  "version": "0.0.7",
   "homepage": "https://github.com/butchmarshall/jquery.api-adapter",
   "authors": [
     "Butch Marshall <butch.a.marshall@gmail.com>"
@@ -22,11 +22,11 @@
     "jquery-deparam": ">= 0.3.0"
   },
   "devDependencies": {},
-  "_release": "0.0.4",
+  "_release": "0.0.7",
   "_resolution": {
     "type": "version",
-    "tag": "0.0.4",
-    "commit": "e2ddc1e966b6c2e5632c7b7559e57f9cc91f83fa"
+    "tag": "0.0.7",
+    "commit": "2edb66484e3387e62d32802d069759e22deeea1b"
   },
   "_source": "git://github.com/butchmarshall/jquery.api-adapter.git",
   "_target": ">= 0.0.1",

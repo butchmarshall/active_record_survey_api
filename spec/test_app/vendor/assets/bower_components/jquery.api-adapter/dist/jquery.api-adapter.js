@@ -143,7 +143,8 @@
 	}
 	
 	// Returns an in progress or finished request, or executes a new request if never executed before
-	function to_route_request(route_name, orig_parts, data, no_cache) {
+	function to_route_request(route_name, orig_parts, data, args) {
+		args = ((typeof(args) != "object")? { no_cache: args } : args);
 		var parts = orig_parts, route = routes[route_name], uri = null;
 
 		if (typeof(parts) == "string") {
@@ -215,8 +216,8 @@
         // Allows us to modify the data sent
         data  = route.before_send(data);
 
-		if (!request_cache[route_name][cache_key] || no_cache) {
-			request_cache[route_name][cache_key] = get_request(jQuery.extend({}, route, {
+		if (!request_cache[route_name][cache_key] || args.no_cache) {
+			request_cache[route_name][cache_key] = get_request(jQuery.extend({}, args, route, {
 				url: uri,
 				data: data,
 				dataType: defaultDataType
@@ -231,7 +232,7 @@
 						response: response,
 						route: route,
 						request_cache: request_cache,
-						no_cache: no_cache
+						no_cache: args.no_cache
 					});
 				},
 				function(response) {
@@ -303,14 +304,14 @@
 	};
 
 	// Execute a defined route
-	Api.execute = function(route_name, parts, data, noCache) {
+	Api.execute = function(route_name, parts, data, args) {
 		// Route not previously defined
 		if (!routes[route_name]) {
 			Api.logger("error", "Could not execute undefined route", route_name);
 			return false;
 		}
 
-		return to_route_request(route_name, parts, data, noCache);
+		return to_route_request(route_name, parts, data, args);
 	};
 
 	Api.url = function(route_name, parts, data) {

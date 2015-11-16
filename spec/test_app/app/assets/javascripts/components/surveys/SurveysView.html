@@ -17,6 +17,7 @@
 				<tr ng-repeat="datum in surveys.data">
 					<td>{{datum.attributes.name}}</td>
 					<td align="right">
+						<a ng-click="survey_questions(datum.id)" class="btn btn-default" href="#">Questions</a>
 						<a ng-click="survey_delete(datum.links.self)" class="btn btn-danger" href="#">Delete</a>
 					</td>
 				</tr>

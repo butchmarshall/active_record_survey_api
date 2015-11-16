@@ -4,6 +4,10 @@ module ActiveRecordSurveyApi
 			module Questions
 				extend ActiveSupport::Concern
 
+				included do
+					before_filter :find_survey, :if => proc { |c| params[:survey_id].to_i > 0 }
+				end
+
 				def index
 					@questions = all_questions
 
@@ -14,6 +18,13 @@ module ActiveRecordSurveyApi
 					@question = question_by_id(params[:id])
 
 					render json: serialize_model(@question, serializer: ActiveRecordSurveyApi::QuestionSerializer)
+				end
+
+				def destroy
+					@question = question_by_id(params[:id])
+					@question.destroy
+
+					head :no_content
 				end
 
 				def update
@@ -51,11 +62,7 @@ module ActiveRecordSurveyApi
 					end
 
 					def question_params
-						json_params.require(:question).permit(:text, nodes: [])
-					end
-
-					included do
-						before_filter :find_survey, :if => proc { |c| params[:survey_id].to_i > 0 }
+						json_params.require(:question).require(:attributes).permit(:text)
 					end
 
 					def find_survey

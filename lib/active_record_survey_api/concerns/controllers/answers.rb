@@ -28,7 +28,14 @@ module ActiveRecordSurveyApi
 
 					render json: serialize_model(@answer, serializer: ActiveRecordSurveyApi::AnswerSerializer)
 				end
-		
+
+				def destroy
+					@answer = answer_by_id(params[:id])
+					@answer.destroy
+
+					head :no_content
+				end
+
 				def create
 					@answer = new_answer(answer_params)
 					@question.build_answer(@answer, @survey)
@@ -36,6 +43,7 @@ module ActiveRecordSurveyApi
 
 					render json: serialize_model(@answer, serializer: ActiveRecordSurveyApi::AnswerSerializer)
 				end
+
 				private
 					def all_answers
 						all_answers = []

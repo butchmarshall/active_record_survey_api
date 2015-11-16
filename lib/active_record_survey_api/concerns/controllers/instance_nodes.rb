@@ -15,6 +15,13 @@ module ActiveRecordSurveyApi
 					render json: serialize_model(@instance_node, serializer: ActiveRecordSurveyApi::InstanceNodeSerializer)
 				end
 
+				def destroy
+					@instance_node = instance_node_by_id(params[:id])
+					@instance_node.destroy
+
+					head :no_content
+				end
+
 				def create
 					@instance_node = new_instance_node(instance_node_params.merge(:instance => @instance))
 					@instance_node.save

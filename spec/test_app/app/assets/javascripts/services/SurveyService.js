@@ -32,9 +32,8 @@ testApp.factory('Survey', ['$rootScope', 'SURVEY_EVENTS', 'ApiAdapter',
 			"/surveys/{surveyId}",
 			{
 				"type": "PUT",
-				"before_send": function(data) {
-					return data;
-				},
+				"processData": false,
+				"contentType": "application/json",
 				"success": function(result) {
 					$rootScope.$broadcast(SURVEY_EVENTS.update, result.response);
 				}

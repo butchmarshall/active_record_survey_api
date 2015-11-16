@@ -7,6 +7,10 @@ function SurveysController($scope, $rootScope, $state, $location, $modal, ApiAda
 		}
 	);
 
+	$scope.survey_questions = function(surveyId) {
+		$state.go('surveys.questions', { surveyId: surveyId });
+	};
+
 	$scope.survey_delete = function(self_href) {
 		ApiAdapter.execute("delete_survey", self_href, {}, true
 		).then(
@@ -15,7 +19,7 @@ function SurveysController($scope, $rootScope, $state, $location, $modal, ApiAda
 			}
 		);
 	};
-	
+
 	$scope.survey_new = function() {
 		$modal.open({
 			size: 'lg',
@@ -23,7 +27,9 @@ function SurveysController($scope, $rootScope, $state, $location, $modal, ApiAda
 
 				$scope.model = {
 					survey: {
-						name: ""
+						attributes: {
+							name: ""
+						}
 					}
 				};
 
