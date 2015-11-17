@@ -1,13 +1,6 @@
-function SurveyQuestionsController($scope, $rootScope, $state, $location, $modal, $stateParams, ApiAdapter, Survey, Question) {
+function SurveyQuestionAnswersController($scope, $rootScope, $state, $location, $modal, $stateParams, ApiAdapter, Survey, Question, Answer) {
 	$scope.headers = {
 		'Accept-Language': 'en'
-	};
-
-	$scope.question_answers = function(questionId) {
-		$state.go('surveys.questions.answers', {
-			surveyId: $stateParams.surveyId,
-			questionId: questionId
-		});
 	};
 
 	$scope.survey = null;
@@ -19,19 +12,27 @@ function SurveyQuestionsController($scope, $rootScope, $state, $location, $modal
 			$scope.$apply()
 		}
 	);
-	
-	$scope.questions = {};
 
+	$scope.question = null;
+	$scope.answers = {};
 	$scope.$watch("headers['Accept-Language']", function(newValue, oldValue) {
-
-		Question.index({
-			surveyId: $stateParams.surveyId
+		Question.get({
+			questionId: $stateParams.questionId
+		}, {}).then(
+			function(result) {
+				$scope.question = result;
+				$scope.$apply()
+			}
+		);
+	
+		Answer.index({
+			questionId: $stateParams.questionId
 		}, {}, {
 			no_cache: true,
 			headers: $scope.headers
 		}).then(
 			function(result) {
-				$scope.questions = result;
+				$scope.answers = result;
 				if(!$scope.$$phase) {
 					$scope.$apply()
 				}
@@ -40,8 +41,8 @@ function SurveyQuestionsController($scope, $rootScope, $state, $location, $modal
 
 	});
 	
-	$scope.question_delete = function(self_href) {
-		ApiAdapter.execute("delete_question", self_href, {}, true
+	$scope.answer_delete = function(self_href) {
+		ApiAdapter.execute("delete_answer", self_href, {}, true
 		).then(
 			function(response) {
 				$state.go($state.current, {}, {reload: true});
@@ -49,25 +50,25 @@ function SurveyQuestionsController($scope, $rootScope, $state, $location, $modal
 		);
 	};
 
-	$scope.question_edit = function(question_id) {
+	$scope.answer_edit = function(answer_id) {
 		$modal.open({
 			size: 'lg',
 			resolve: {
-				question: [function($stateParams, Api) {
-					return Question.get({questionId: question_id});
+				answer: [function($stateParams, Api) {
+					return Answer.get({answerId: answer_id});
 				}]
 			},
-			controller: function($scope, $modalInstance, question) {
+			controller: function($scope, $modalInstance, answer) {
 				$scope.model = {
-					id: question.data.id,
-					question: {
-						attributes: question.data.attributes
+					id: answer.data.id,
+					answer: {
+						attributes: answer.data.attributes
 					}
 				};
 
 				$scope.onSubmit = function(data) {
-					return ApiAdapter.execute("update_question", {
-						questionId: question_id
+					return ApiAdapter.execute("update_answer", {
+						answerId: answer_id
 					}, JSON.stringify(data), {
 						no_cache: true,
 						headers: {
@@ -85,16 +86,16 @@ function SurveyQuestionsController($scope, $rootScope, $state, $location, $modal
 					$modalInstance.close();
 				};
 			},
-			templateUrl: "/assets/components/surveys/QuestionModal.html"
+			templateUrl: "/assets/components/surveys/AnswerModal.html"
 		});
 	};
 
-	$scope.question_new = function() {
+	$scope.answer_new = function() {
 		$modal.open({
 			size: 'lg',
 			controller: function($scope, $modalInstance) {
 				$scope.model = {
-					question: {
+					answer: {
 						attributes: {
 							text: ""
 						}
@@ -102,8 +103,8 @@ function SurveyQuestionsController($scope, $rootScope, $state, $location, $modal
 				};
 
 				$scope.onSubmit = function(data) {
-					return ApiAdapter.execute("create_question", {
-						surveyId: $stateParams.surveyId
+					return ApiAdapter.execute("create_answer", {
+						questionId: $stateParams.questionId
 					}, JSON.stringify(data), {
 						no_cache: true,
 						headers: {
@@ -121,7 +122,7 @@ function SurveyQuestionsController($scope, $rootScope, $state, $location, $modal
 					$modalInstance.close();
 				};
 			},
-			templateUrl: "/assets/components/surveys/QuestionModal.html"
+			templateUrl: "/assets/components/surveys/AnswerModal.html"
 		});
 	};
 };

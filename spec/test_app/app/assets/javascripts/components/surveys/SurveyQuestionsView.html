@@ -6,6 +6,7 @@
 
 		<div class="row">
 			<div class="col-xs-8">
+				<button type="button" class="btn btn-default" ui-sref="surveys">Back to Surveys</button>
 				<button type="button" class="btn btn-default" ng-click="question_new()">Add Question</button>
 			</div>
 			<div class="col-xs-4">
@@ -28,7 +29,7 @@
 					<td>{{datum.attributes.text}}</td>
 					<td align="right">
 						<a ng-click="question_edit(datum.id)" class="btn btn-default" href="#" onclick="return false;">Edit</a>
-						<a ng-click="question_answers(datum.id)" class="btn btn-default" href="#" onclick="return false;">Answers</a>
+						<a ng-click="question_answers(datum.id)" class="btn btn-default" href="#" onclick="return false;">Build Answers</a>
 						<a ng-click="question_delete(datum.links.self)" class="btn btn-danger" href="#" onclick="return false;">Delete</a>
 					</td>
 				</tr>

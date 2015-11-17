@@ -12,7 +12,7 @@ module ActiveRecordSurveyApi
 
 				def update
 					@answer = answer_by_id(params[:id])
-					@answer.update_attributes(answer_params[:answer])
+					@answer.update_attributes(answer_params)
 
 					render json: serialize_model(@answer, serializer: ActiveRecordSurveyApi::AnswerSerializer)
 				end
@@ -37,6 +37,7 @@ module ActiveRecordSurveyApi
 				end
 
 				def create
+					@survey = @question.survey if @survey.nil?
 					@answer = new_answer(answer_params)
 					@question.build_answer(@answer, @survey)
 					@survey.save
@@ -58,7 +59,7 @@ module ActiveRecordSurveyApi
 					def new_answer(params)
 						klass = "::ActiveRecordSurvey::Node::Answer::#{(params[:type] || "answer").to_s.camelize}".constantize
 
-						klass.new(params[:answer])
+						klass.new(params)
 					end
 
 					def json_params
@@ -66,7 +67,7 @@ module ActiveRecordSurveyApi
 					end
 
 					def answer_params
-						json_params.permit(:type, answer: [:text, nodes: []])
+						json_params.require(:answer).require(:attributes).permit(:text)
 					end
 
 					def find_survey

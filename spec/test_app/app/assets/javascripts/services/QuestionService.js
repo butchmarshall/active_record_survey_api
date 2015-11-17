@@ -55,7 +55,6 @@ testApp.factory('Question', ['$rootScope', 'QUESTION_EVENTS', 'ApiAdapter',
 				return ApiAdapter.execute("get_question", params, data, args);
 			},
 			index: function(params, data, args) {
-				console.log(params, data, args);
 				return ApiAdapter.execute("get_questions", params, data, args);
 			},
 			create: function(params, data, args) {

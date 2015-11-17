@@ -54,7 +54,7 @@ module ActiveRecordSurveyApi
 					end
 
 					def new_question(params)
-						ActiveRecordSurvey::Node::Question.new(question_params)
+						ActiveRecordSurvey::Node::Question.new(params)
 					end
 
 					def json_params
