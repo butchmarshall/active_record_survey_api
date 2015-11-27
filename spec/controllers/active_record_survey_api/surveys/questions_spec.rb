@@ -43,7 +43,9 @@ describe ActiveRecordSurveyApi::QuestionsController, :type => :controller, :ques
 				put :update,
 				{
 					:question => {
-						:text => "Comment allez-vous aujourd'hui?"
+						:attributes => {
+							:text => "Comment allez-vous aujourd'hui?"
+						}
 					}
 				}.to_json, @header_params.merge(:id => q1.id)
 
@@ -67,7 +69,9 @@ describe ActiveRecordSurveyApi::QuestionsController, :type => :controller, :ques
 				put :update,
 				{
 					:question => {
-						:text => "How are you doing today?"
+						:attributes => {
+							:text => "How are you doing today?"
+						}
 					}
 				}.to_json, @header_params.merge(:id => q1.id)
 
@@ -91,7 +95,9 @@ describe ActiveRecordSurveyApi::QuestionsController, :type => :controller, :ques
 				post :create,
 				{
 					:question => {
-						:text => "How are you today?"
+						:attributes => {
+							:text => "How are you today?"
+						}
 					}
 				}.to_json, @header_params.merge(:survey_id => survey.id)
 
@@ -102,7 +108,9 @@ describe ActiveRecordSurveyApi::QuestionsController, :type => :controller, :ques
 				post :create,
 				{
 					:question => {
-						:text => "What is your favorite colour?"
+						:attributes => {
+							:text => "What is your favorite colour?"
+						}
 					}
 				}.to_json, @header_params.merge(:survey_id => survey.id)
 

@@ -17,7 +17,9 @@ describe ActiveRecordSurveyApi::SurveysController, :type => :controller, :survey
 			post :create,
 			{
 				:survey => {
-					:name => "API Created Survey"
+					:attributes => {
+						:name => "API Created Survey"
+					}
 				}
 			}.to_json, @header_params.merge(:HTTP_ACCEPT_LANGUAGE => 'en')
 

@@ -11,8 +11,6 @@ class ApplicationController < ActionController::Base
 		end
 	end
 
-	#respond_to :json
-
 	# Set P3P header - fuck you IE
 	before_filter do
 		response.headers['P3P'] = 'CP="CAO PSA OUR"'

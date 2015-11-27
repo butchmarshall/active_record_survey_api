@@ -47,7 +47,9 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 			put :update,
 			{
 				:answer => {
-					:text => "It's definitely a Monday."
+					:attributes => {
+						:text => "It's definitely a Monday."
+					}
 				}
 			}.to_json, @header_params.merge(:id => 2, :HTTP_ACCEPT_LANGUAGE => 'en')
 			json_body = JSON.parse(response.body)
@@ -59,7 +61,9 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 			put :update,
 			{
 				:answer => {
-					:text => "Il est certainement un lundi."
+					:attributes => {
+						:text => "Il est certainement un lundi."
+					}
 				}
 			}.to_json, @header_params.merge(:id => 2, :HTTP_ACCEPT_LANGUAGE => 'fr')
 			json_body = JSON.parse(response.body)
@@ -125,7 +129,7 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 		end
 	end
 	describe 'POST create' do
-		it 'should create new answers english' do
+		it 'should create new answers english', :workonme => true do
 			survey = ActiveRecordSurvey::Survey.create
 
 			# Question 1
@@ -149,21 +153,27 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 			post :create,
 			{
 				:answer => {
-					:text => "Great!"
+					:attributes => {
+						:text => "Great!"
+					}
 				}
 			}.to_json, @header_params.merge(:survey_id => survey.id, :question_id => question1.id)
 
 			post :create,
 			{
 				:answer => {
-					:text => "Oh, you know, I'm OK."
+					:attributes => {
+						:text => "Oh, you know, I'm OK."
+					}
 				}
 			}.to_json, @header_params.merge(:survey_id => survey.id, :question_id => question1.id)
 
 			post :create,
 			{
 				:answer => {
-					:text => "It's definitely a Monday."
+					:attributes => {
+						:text => "It's definitely a Monday."
+					}
 				}
 			}.to_json, @header_params.merge(:survey_id => survey.id, :question_id => question1.id)
 
@@ -174,18 +184,23 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 			post :create,
 			{
 				:answer => {
-					:text => "Pizza"
+					:attributes => {
+						:type => "boolean",
+						:text => "Pizza"
+					}
 				}
 			}.to_json, @header_params.merge(:survey_id => survey.id, :question_id => question2.id)
 			json_body = JSON.parse(response.body)
 
-			expect(json_body).to eq({"data"=>{"id"=>"6", "type"=>"answer_answers", "attributes"=>{"text"=>"Pizza"}, "links"=>{"self"=>"/answers/6"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/6/relationships/question", "related"=>"/answers/6/question"}}}}})
+			expect(json_body).to eq({"data"=>{"id"=>"6", "type"=>"boolean_answers", "attributes"=>{"text"=>"Pizza"}, "links"=>{"self"=>"/answers/6"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/6/relationships/question", "related"=>"/answers/6/question"}}}}})
 
 			post :create,
 			{
-				:type => "boolean",
 				:answer => {
-					:text => "Spagetti"
+					:attributes => {
+						:type => "boolean",
+						:text => "Spagetti"
+					}
 				}
 			}.to_json, @header_params.merge(:survey_id => survey.id, :question_id => question2.id)
 			json_body = JSON.parse(response.body)
@@ -193,9 +208,11 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 
 			post :create,
 			{
-				:type => "boolean",
 				:answer => {
-					:text => "Nachos"
+					:attributes => {
+						:type => "boolean",
+						:text => "Nachos"
+					}
 				}
 			}.to_json, @header_params.merge(:survey_id => survey.id, :question_id => question2.id)
 			json_body = JSON.parse(response.body)
@@ -249,7 +266,7 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 					  "text" => "Pizza",
 					  "id" => 6,
 					  "node_id" => 6,
-					  "type" => "ActiveRecordSurvey::Node::Answer",
+					  "type" => "ActiveRecordSurvey::Node::Answer::Boolean",
 					  "children" => [
 						{
 						  "text" => "Spagetti",

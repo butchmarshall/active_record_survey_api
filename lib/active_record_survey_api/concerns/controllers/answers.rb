@@ -57,7 +57,7 @@ module ActiveRecordSurveyApi
 					end
 
 					def new_answer(params)
-						klass = "::ActiveRecordSurvey::Node::Answer::#{(params[:type] || "answer").to_s.camelize}".constantize
+						klass = "#{(params[:type] || "::ActiveRecordSurvey::Node::Answer")}".constantize
 
 						klass.new(params)
 					end
@@ -67,7 +67,9 @@ module ActiveRecordSurveyApi
 					end
 
 					def answer_params
-						json_params.require(:answer).require(:attributes).permit(:text)
+						json_params.require(:answer).require(:attributes).permit(:text,:type).tap { |whitelisted|
+							whitelisted[:type] = "ActiveRecordSurvey::Node::Answer::#{whitelisted[:type].camelize}" unless whitelisted[:type].nil?
+						}
 					end
 
 					def find_survey
