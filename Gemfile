@@ -15,5 +15,5 @@ gemspec
 
 gem 'minitest', group: [:test]
 
-gem "active_record_survey", :path => "../active_record_survey"
-gem "rack-cors", :require => "rack/cors"
+#gem "active_record_survey", :path => "../active_record_survey"
+#gem "rack-cors", :require => "rack/cors"
