@@ -10,6 +10,7 @@ Release Notes
 
 **0.0.7**
  - Endpoints for getting/setting/removing an answers next question
+
 **0.0.4**
  - Basic survey building and taking
 
