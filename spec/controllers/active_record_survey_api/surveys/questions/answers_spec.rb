@@ -13,6 +13,62 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 		}
 	end
 
+	describe 'POST to relationships/next-question', :tag => true do
+		it 'should link the answer and next question' do
+			survey = FactoryGirl.build(:basic_survey)
+
+			q = ActiveRecordSurvey::Node::Question.new(:text => "Question Linkable")
+			survey.build_question(q)
+			q_a1 = ActiveRecordSurvey::Node::Answer.new(:text => "Question Linkable Answer #1")
+			q_a2 = ActiveRecordSurvey::Node::Answer.new(:text => "Question Linkable Answer #2")
+			q.build_answer(q_a1)
+			q.build_answer(q_a2)
+			survey.save
+
+			survey.reload
+			expect(survey.node_maps.length).to eq(34)
+
+			# Link
+			post 'link_next_question', {
+				question_id: 14
+			}.to_json, @header_params.merge(:answer_id => 8,:HTTP_ACCEPT_LANGUAGE => 'en')
+
+			survey.reload
+			expect(survey.node_maps.length).to eq(49)
+
+			# Unlink
+			delete 'unlink_next_question', {
+			}.to_json, @header_params.merge(:answer_id => 8,:HTTP_ACCEPT_LANGUAGE => 'en')
+
+			survey.reload
+			expect(survey.node_maps.length).to eq(34)
+
+			# Link
+			post 'link_next_question', {
+				question_id: 14
+			}.to_json, @header_params.merge(:answer_id => 8,:HTTP_ACCEPT_LANGUAGE => 'en')
+
+			survey.reload
+			expect(survey.node_maps.length).to eq(49)
+
+			# Link
+			post 'link_next_question', {
+				question_id: 14
+			}.to_json, @header_params.merge(:answer_id => 7,:HTTP_ACCEPT_LANGUAGE => 'en')
+
+			survey.reload
+			expect(survey.node_maps.length).to eq(67)
+
+			# Unlink
+			delete 'unlink_next_question', {
+			}.to_json, @header_params.merge(:answer_id => 8,:HTTP_ACCEPT_LANGUAGE => 'en')
+
+			survey.reload
+			expect(survey.node_maps.length).to eq(49)
+
+		end
+	end
+
 	describe 'GET index' do
 		it 'should retrieve all answers for a question' do
 			I18n.locale = :en
@@ -54,7 +110,7 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 			}.to_json, @header_params.merge(:id => 2, :HTTP_ACCEPT_LANGUAGE => 'en')
 			json_body = JSON.parse(response.body)
 			
-			expect(json_body).to eq({"data"=>{"id"=>"2", "type"=>"answer_answers", "attributes"=>{"text"=>"It's definitely a Monday."}, "links"=>{"self"=>"/answers/2"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/2/relationships/question", "related"=>"/answers/2/question"}}}}})
+			expect(json_body).to eq({"data"=>{"id"=>"2", "type"=>"answer_answers", "attributes"=>{"text"=>"It's definitely a Monday."}, "links"=>{"self"=>"/answers/2"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/2/relationships/question", "related"=>"/answers/2/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/2/relationships/next-question", "related"=>"/answers/2/next-question"}}}}})
 
 			I18n.locale = :fr
 
@@ -68,7 +124,7 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 			}.to_json, @header_params.merge(:id => 2, :HTTP_ACCEPT_LANGUAGE => 'fr')
 			json_body = JSON.parse(response.body)
 
-			expect(json_body).to eq({"data"=>{"id"=>"2", "type"=>"answer_answers", "attributes"=>{"text"=>"Il est certainement un lundi."}, "links"=>{"self"=>"/answers/2"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/2/relationships/question", "related"=>"/answers/2/question"}}}}})
+			expect(json_body).to eq({"data"=>{"id"=>"2", "type"=>"answer_answers", "attributes"=>{"text"=>"Il est certainement un lundi."}, "links"=>{"self"=>"/answers/2"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/2/relationships/question", "related"=>"/answers/2/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/2/relationships/next-question", "related"=>"/answers/2/next-question"}}}}})
 
 			# ------------------------------------------------------------------------------
 			# Answers should be retrievable in each translated language
@@ -81,7 +137,7 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 			}.to_json, @header_params.merge(:id => 2, :HTTP_ACCEPT_LANGUAGE => 'en')
 			json_body = JSON.parse(response.body)
 			
-			expect(json_body).to eq({"data"=>{"id"=>"2", "type"=>"answer_answers", "attributes"=>{"text"=>"It's definitely a Monday."}, "links"=>{"self"=>"/answers/2"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/2/relationships/question", "related"=>"/answers/2/question"}}}}})
+			expect(json_body).to eq({"data"=>{"id"=>"2", "type"=>"answer_answers", "attributes"=>{"text"=>"It's definitely a Monday."}, "links"=>{"self"=>"/answers/2"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/2/relationships/question", "related"=>"/answers/2/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/2/relationships/next-question", "related"=>"/answers/2/next-question"}}}}})
 
 			I18n.locale = :fr
 
@@ -90,7 +146,7 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 			}.to_json, @header_params.merge(:id => 2, :HTTP_ACCEPT_LANGUAGE => 'fr')
 			json_body = JSON.parse(response.body)
 
-			expect(json_body).to eq({"data"=>{"id"=>"2", "type"=>"answer_answers", "attributes"=>{"text"=>"Il est certainement un lundi."}, "links"=>{"self"=>"/answers/2"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/2/relationships/question", "related"=>"/answers/2/question"}}}}})
+			expect(json_body).to eq({"data"=>{"id"=>"2", "type"=>"answer_answers", "attributes"=>{"text"=>"Il est certainement un lundi."}, "links"=>{"self"=>"/answers/2"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/2/relationships/question", "related"=>"/answers/2/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/2/relationships/next-question", "related"=>"/answers/2/next-question"}}}}})
 			
 
 			# ------------------------------------------------------------------------------
@@ -104,7 +160,7 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 			}.to_json, @header_params.merge(:question_id => 1,:HTTP_ACCEPT_LANGUAGE => 'en')
 			json_body = JSON.parse(response.body)
 
-			expect(json_body).to eq({"data"=>[{"id"=>"2", "type"=>"answer_answers", "attributes"=>{"text"=>"It's definitely a Monday."}, "links"=>{"self"=>"/answers/2"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/2/relationships/question", "related"=>"/answers/2/question"}}}}, {"id"=>"11", "type"=>"answer_answers", "attributes"=>{"text"=>"Q1 Answer #2"}, "links"=>{"self"=>"/answers/11"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/11/relationships/question", "related"=>"/answers/11/question"}}}}, {"id"=>"6", "type"=>"answer_answers", "attributes"=>{"text"=>"Q1 Answer #3"}, "links"=>{"self"=>"/answers/6"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/6/relationships/question", "related"=>"/answers/6/question"}}}}], "meta"=>{"total"=>3}})
+			expect(json_body).to eq({"data"=>[{"id"=>"2", "type"=>"answer_answers", "attributes"=>{"text"=>"It's definitely a Monday."}, "links"=>{"self"=>"/answers/2"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/2/relationships/question", "related"=>"/answers/2/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/2/relationships/next-question", "related"=>"/answers/2/next-question"}}}}, {"id"=>"11", "type"=>"answer_answers", "attributes"=>{"text"=>"Q1 Answer #2"}, "links"=>{"self"=>"/answers/11"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/11/relationships/question", "related"=>"/answers/11/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/11/relationships/next-question", "related"=>"/answers/11/next-question"}}}}, {"id"=>"6", "type"=>"answer_answers", "attributes"=>{"text"=>"Q1 Answer #3"}, "links"=>{"self"=>"/answers/6"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/6/relationships/question", "related"=>"/answers/6/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/6/relationships/next-question", "related"=>"/answers/6/next-question"}}}}], "meta"=>{"total"=>3}})
 			expect(json_body["meta"]["total"]).to eq(3)
 
 
@@ -115,7 +171,7 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 			}.to_json, @header_params.merge(:question_id => 1,:HTTP_ACCEPT_LANGUAGE => 'fr')
 			json_body = JSON.parse(response.body)
 
-			expect(json_body).to eq({"data"=>[{"id"=>"2", "type"=>"answer_answers", "attributes"=>{"text"=>"Il est certainement un lundi."}, "links"=>{"self"=>"/answers/2"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/2/relationships/question", "related"=>"/answers/2/question"}}}}, {"id"=>"11", "type"=>"answer_answers", "attributes"=>{"text"=>nil}, "links"=>{"self"=>"/answers/11"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/11/relationships/question", "related"=>"/answers/11/question"}}}}, {"id"=>"6", "type"=>"answer_answers", "attributes"=>{"text"=>nil}, "links"=>{"self"=>"/answers/6"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/6/relationships/question", "related"=>"/answers/6/question"}}}}], "meta"=>{"total"=>3}})
+			expect(json_body).to eq({"data"=>[{"id"=>"2", "type"=>"answer_answers", "attributes"=>{"text"=>"Il est certainement un lundi."}, "links"=>{"self"=>"/answers/2"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/2/relationships/question", "related"=>"/answers/2/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/2/relationships/next-question", "related"=>"/answers/2/next-question"}}}}, {"id"=>"11", "type"=>"answer_answers", "attributes"=>{"text"=>nil}, "links"=>{"self"=>"/answers/11"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/11/relationships/question", "related"=>"/answers/11/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/11/relationships/next-question", "related"=>"/answers/11/next-question"}}}}, {"id"=>"6", "type"=>"answer_answers", "attributes"=>{"text"=>nil}, "links"=>{"self"=>"/answers/6"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/6/relationships/question", "related"=>"/answers/6/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/6/relationships/next-question", "related"=>"/answers/6/next-question"}}}}], "meta"=>{"total"=>3}})
 			expect(json_body["meta"]["total"]).to eq(3)
 
 			I18n.locale = :en
@@ -192,7 +248,7 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 			}.to_json, @header_params.merge(:survey_id => survey.id, :question_id => question2.id)
 			json_body = JSON.parse(response.body)
 
-			expect(json_body).to eq({"data"=>{"id"=>"6", "type"=>"boolean_answers", "attributes"=>{"text"=>"Pizza"}, "links"=>{"self"=>"/answers/6"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/6/relationships/question", "related"=>"/answers/6/question"}}}}})
+			expect(json_body).to eq({"data"=>{"id"=>"6", "type"=>"boolean_answers", "attributes"=>{"text"=>"Pizza"}, "links"=>{"self"=>"/answers/6"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/6/relationships/question", "related"=>"/answers/6/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/6/relationships/next-question", "related"=>"/answers/6/next-question"}}}}})
 
 			post :create,
 			{
@@ -204,7 +260,7 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 				}
 			}.to_json, @header_params.merge(:survey_id => survey.id, :question_id => question2.id)
 			json_body = JSON.parse(response.body)
-			expect(json_body).to eq({"data"=>{"id"=>"7", "type"=>"boolean_answers", "attributes"=>{"text"=>"Spagetti"}, "links"=>{"self"=>"/answers/7"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/7/relationships/question", "related"=>"/answers/7/question"}}}}})
+			expect(json_body).to eq({"data"=>{"id"=>"7", "type"=>"boolean_answers", "attributes"=>{"text"=>"Spagetti"}, "links"=>{"self"=>"/answers/7"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/7/relationships/question", "related"=>"/answers/7/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/7/relationships/next-question", "related"=>"/answers/7/next-question"}}}}})
 
 			post :create,
 			{
@@ -217,7 +273,7 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 			}.to_json, @header_params.merge(:survey_id => survey.id, :question_id => question2.id)
 			json_body = JSON.parse(response.body)
 
-			expect(json_body).to eq({"data"=>{"id"=>"8", "type"=>"boolean_answers", "attributes"=>{"text"=>"Nachos"}, "links"=>{"self"=>"/answers/8"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/8/relationships/question", "related"=>"/answers/8/question"}}}}})
+			expect(json_body).to eq({"data"=>{"id"=>"8", "type"=>"boolean_answers", "attributes"=>{"text"=>"Nachos"}, "links"=>{"self"=>"/answers/8"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/8/relationships/question", "related"=>"/answers/8/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/8/relationships/next-question", "related"=>"/answers/8/next-question"}}}}})
 
 			# As Map should 
 			expect(survey.as_map.as_json).to eq([                                                                                                                                                                                                                                                

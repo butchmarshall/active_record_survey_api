@@ -3,6 +3,8 @@ module ActiveRecordSurveyApi
 		attribute :text
 
 		has_one :question
+		has_one :next_question
+		
 
 		def type
 			"#{object.class.name.demodulize.tableize.singularize.dasherize}_answers"

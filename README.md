@@ -8,6 +8,8 @@ API implementation for [ActiveRecordSurvey](https://github.com/butchmarshall/act
 Release Notes
 ============
 
+**0.0.7**
+ - Endpoints for getting/setting/removing an answers next question
 **0.0.4**
  - Basic survey building and taking
 
@@ -21,23 +23,23 @@ gem 'active_record_survey_api'
 
 And then execute:
 
-    $ bundle
+    $ bundle install
 
 Or install it yourself as:
 
     $ gem install active_record_survey_api
 
-## Installation
+## Sample frontend
 
-TODO
+    $ cd spec/test_app
+    $ bundle exec rake db:migrate
+    $ passenger start
+
+Navigate to localhost:3000 - you'll get a frontend GUI implemented in [angularjs](https://github.com/angular/angular.js)
 
 ## Usage
 
 TODO
-
-```ruby
-
-```
 
 ## Development
 

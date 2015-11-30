@@ -45,6 +45,30 @@ module ActiveRecordSurveyApi
 					render json: serialize_model(@answer, serializer: ActiveRecordSurveyApi::AnswerSerializer)
 				end
 
+				def get_next_question
+					@answer = answer_by_id(params[:answer_id])
+					@question = @answer.next_question
+
+					render json: serialize_model(@question, serializer: ActiveRecordSurveyApi::QuestionSerializer)
+				end
+
+				def link_next_question
+					@answer = answer_by_id(params[:answer_id])
+					@question = ActiveRecordSurvey::Node::Question.find(json_params[:question_id])
+					@answer.build_link(@question)
+					@answer.save
+
+					head :no_content
+				end
+
+				def unlink_next_question
+					@answer = answer_by_id(params[:answer_id])
+					@answer.remove_link
+					@answer.save
+
+					head :no_content
+				end
+
 				private
 					def all_answers
 						all_answers = []

@@ -123,7 +123,7 @@ describe ActiveRecordSurveyApi::QuestionsController, :type => :controller, :ques
 			end
 		end
 
-		describe 'GET index', :focus => true do
+		describe 'GET index' do
 			it 'should get only unique questions for the survey in english and french' do
 				I18n.locale = :fr
 

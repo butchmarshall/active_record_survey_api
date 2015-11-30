@@ -26,7 +26,7 @@ describe ActiveRecordSurveyApi::InstancesController, :type => :controller, :inst
 		end
 	end
 
-	describe 'PUT update/:id', :focus => true do
+	describe 'PUT update/:id' do
 		it 'should bulk update instance responses' do
 			survey = FactoryGirl.build(:basic_survey)
 			survey.save
