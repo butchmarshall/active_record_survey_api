@@ -42,4 +42,4 @@ surveysModule.config(
 
 surveysModule.controller('SurveysController', ['$scope', '$rootScope', '$state', '$location', '$modal', 'ApiAdapter', 'Survey', SurveysController]);
 surveysModule.controller('SurveyQuestionsController', ['$scope', '$rootScope', '$state', '$location', '$modal', '$stateParams', 'ApiAdapter', 'Survey', 'Question', SurveyQuestionsController]);
-surveysModule.controller('SurveyQuestionAnswersController', ['$scope', '$rootScope', '$state', '$location', '$modal', '$stateParams', 'ApiAdapter', 'Survey', 'Question', 'Answer', SurveyQuestionAnswersController]);
+surveysModule.controller('SurveyQuestionAnswersController', ['$scope', '$rootScope', '$state', '$location', '$modal', '$stateParams', '$q', 'ApiAdapter', 'Survey', 'Question', 'Answer', SurveyQuestionAnswersController]);

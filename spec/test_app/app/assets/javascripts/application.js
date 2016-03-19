@@ -36,4 +36,5 @@
 //= require angular-translate
 //= require ng-table
 //= require angular-api-adapter
+//= require angular-promise-extras
 //= require_tree .

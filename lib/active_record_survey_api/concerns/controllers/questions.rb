@@ -36,8 +36,8 @@ module ActiveRecordSurveyApi
 
 				def create
 					@question = new_question(question_params)
-					@survey.build_question(@question)
-					@survey.save
+					@question.survey = @survey
+					@question.save
 
 					render json: serialize_model(@question, serializer: ActiveRecordSurveyApi::QuestionSerializer)
 				end
@@ -54,7 +54,7 @@ module ActiveRecordSurveyApi
 					end
 
 					def new_question(params)
-						ActiveRecordSurvey::Node::Question.new(params)
+						ActiveRecordSurvey::Node::Question.new(params, :survey => @survey)
 					end
 
 					def json_params

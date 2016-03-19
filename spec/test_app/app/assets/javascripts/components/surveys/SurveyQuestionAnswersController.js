@@ -1,4 +1,4 @@
-function SurveyQuestionAnswersController($scope, $rootScope, $state, $location, $modal, $stateParams, ApiAdapter, Survey, Question, Answer) {
+function SurveyQuestionAnswersController($scope, $rootScope, $state, $location, $modal, $stateParams, $q, ApiAdapter, Survey, Question, Answer) {
 	$scope.headers = {
 		'Accept-Language': 'en'
 	};
@@ -9,38 +9,102 @@ function SurveyQuestionAnswersController($scope, $rootScope, $state, $location, 
 	}, {}).then(
 		function(result) {
 			$scope.survey = result;
-			$scope.$apply()
+			if(!$scope.$$phase) {
+				$scope.$apply();
+			}
+		}
+	);
+
+	$scope.questions = null;
+	Survey.questions({
+		surveyId: $stateParams.surveyId
+	}, {}).then(
+		function(result) {
+			$scope.questions = result;
+			if(!$scope.$$phase) {
+				$scope.$apply();
+			}
 		}
 	);
 
 	$scope.question = null;
-	$scope.answers = {};
+	$scope.answers = {data:[]};
 	$scope.$watch("headers['Accept-Language']", function(newValue, oldValue) {
 		Question.get({
 			questionId: $stateParams.questionId
 		}, {}).then(
 			function(result) {
 				$scope.question = result;
-				$scope.$apply()
+				if(!$scope.$$phase) {
+					$scope.$apply();
+				}
 			}
 		);
-	
+
 		Answer.index({
 			questionId: $stateParams.questionId
 		}, {}, {
 			no_cache: true,
 			headers: $scope.headers
 		}).then(
-			function(result) {
-				$scope.answers = result;
-				if(!$scope.$$phase) {
-					$scope.$apply()
+			function(answers) {
+				var deferred = [];
+				for(var i = 0; i < answers.data.length; i++) {
+					(function(defer) {
+						ApiAdapter.execute("get_answer_next_question", answers.data[i]["relationships"]["next-question"]["links"]["self"]).then(
+							function (result) {
+								defer.resolve(result);
+							},
+							function(result) {
+								defer.reject(result);
+							}
+						);
+						deferred.push(defer.promise);
+					})($q.defer());
 				}
+
+				$q.allSettled(deferred).then(
+					function (next_questions) {
+						for(var i = 0; i < next_questions.length; i++) {
+							answers.data[i].attributes['next-question-id'] = null;
+							if (next_questions[i].state == "fulfilled") {
+								console.log(next_questions[i].value);
+								answers.data[i].attributes['next-question-id'] = (next_questions[i].value.data)? next_questions[i].value.data.id : next_questions[i].value.data;
+							}
+						}
+
+						$scope.answers = answers;
+						if(!$scope.$$phase) {
+							$scope.$apply()
+						}
+					}
+				);
 			}
 		);
-
 	});
-	
+
+	$scope.$watch("answers.data", function(newValue, oldValue) {
+		for(var i  = 0; i < oldValue.length; i++) {
+			if (oldValue[i].attributes['next-question-id'] != newValue[i].attributes['next-question-id']) {
+				Answer.create_next_question({
+					answerId: newValue[i].id
+				}, JSON.stringify({
+					question_id: newValue[i].attributes['next-question-id']
+				}), {
+					no_cache: true
+				}).then(
+					function(response) {
+						alert("Success!");
+					},
+					function (args) {
+						alert("Failure!");
+					}
+				);
+				break;
+			}
+		}
+	}, true);
+
 	$scope.answer_delete = function(self_href) {
 		ApiAdapter.execute("delete_answer", self_href, {}, true
 		).then(

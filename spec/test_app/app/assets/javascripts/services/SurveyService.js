@@ -49,22 +49,44 @@ testApp.factory('Survey', ['$rootScope', 'SURVEY_EVENTS', 'ApiAdapter',
 				}
 			}
 		);
+		ApiAdapter.addRoute(
+			"get_survey_questions",
+			"/surveys/{surveyId}/questions",
+			{
+				"type": "GET"
+			}
+		);
 
 		return {
-			get: function(params, args, noCache) {
-				return ApiAdapter.execute("get_survey", params, args, ((typeof(noCache) != "boolean")? true : noCache));
+			get: function(params, data, args) {
+				args = ((typeof(args) != "object")? {} : args);
+				args.noCache = ((typeof(args.noCache) != "boolean")? true : args.noCache);
+				return ApiAdapter.execute("get_survey", params, data, args);
 			},
-			index: function(params, args, noCache) {
-				return ApiAdapter.execute("get_surveys", params, args, ((typeof(noCache) != "boolean")? true : noCache));
+			index: function(params, data, args) {
+				args = ((typeof(args) != "object")? {} : args);
+				args.noCache = ((typeof(args.noCache) != "boolean")? true : args.noCache);
+				return ApiAdapter.execute("get_surveys", params, data, args);
 			},
-			create: function(params, args, noCache) {
-				return ApiAdapter.execute("create_survey", params, args, ((typeof(noCache) != "boolean")? true : noCache));
+			create: function(params, data, args) {
+				args = ((typeof(args) != "object")? {} : args);
+				args.noCache = ((typeof(args.noCache) != "boolean")? true : args.noCache);
+				return ApiAdapter.execute("create_survey", params, data, args);
 			},
-			update: function(params, args, noCache) {
-				return ApiAdapter.execute("update_survey", params, args, ((typeof(noCache) != "boolean")? true : noCache));
+			update: function(params, data, args) {
+				args = ((typeof(args) != "object")? {} : args);
+				args.noCache = ((typeof(args.noCache) != "boolean")? true : args.noCache);
+				return ApiAdapter.execute("update_survey", params, data, args);
 			},
-			destroy: function(params, args, noCache) {
-				return ApiAdapter.execute("delete_survey", params, args, ((typeof(noCache) != "boolean")? true : noCache));
+			destroy: function(params, data, args) {
+				args = ((typeof(args) != "object")? {} : args);
+				args.noCache = ((typeof(args.noCache) != "boolean")? true : args.noCache);
+				return ApiAdapter.execute("delete_survey", params, data, args);
+			},
+			questions: function(params, data, args) {
+				args = ((typeof(args) != "object")? {} : args);
+				args.noCache = ((typeof(args.noCache) != "boolean")? true : args.noCache);
+				return ApiAdapter.execute("get_survey_questions", params, data, args);
 			}
 		};
 	}

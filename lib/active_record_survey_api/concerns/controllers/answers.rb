@@ -37,10 +37,9 @@ module ActiveRecordSurveyApi
 				end
 
 				def create
-					@survey = @question.survey if @survey.nil?
 					@answer = new_answer(answer_params)
-					@question.build_answer(@answer, @survey)
-					@survey.save
+					@question.build_answer(@answer)
+					@question.survey.save
 
 					render json: serialize_model(@answer, serializer: ActiveRecordSurveyApi::AnswerSerializer)
 				end
@@ -55,10 +54,26 @@ module ActiveRecordSurveyApi
 				def link_next_question
 					@answer = answer_by_id(params[:answer_id])
 					@question = ActiveRecordSurvey::Node::Question.find(json_params[:question_id])
-					@answer.build_link(@question)
-					@answer.save
 
-					head :no_content
+					if !@answer.next_question.nil?
+						@answer.remove_link
+					end
+
+					begin
+						@answer.build_link(@question)
+						@question.survey.save
+					rescue Exception => $e
+						render json: {
+							errors: [
+								{
+									status: "508",
+									code: "LOOP_DETECTED"
+								}
+							]
+						}, status: :loop_detected
+					else
+						head :no_content
+					end
 				end
 
 				def unlink_next_question

@@ -52,18 +52,28 @@ testApp.factory('Question', ['$rootScope', 'QUESTION_EVENTS', 'ApiAdapter',
 
 		return {
 			get: function(params, data, args) {
+				args = ((typeof(args) != "object")? {} : args);
+				args.noCache = ((typeof(args.noCache) != "boolean")? true : args.noCache);
 				return ApiAdapter.execute("get_question", params, data, args);
 			},
 			index: function(params, data, args) {
+				args = ((typeof(args) != "object")? {} : args);
+				args.noCache = ((typeof(args.noCache) != "boolean")? true : args.noCache);
 				return ApiAdapter.execute("get_questions", params, data, args);
 			},
 			create: function(params, data, args) {
+				args = ((typeof(args) != "object")? {} : args);
+				args.noCache = ((typeof(args.noCache) != "boolean")? true : args.noCache);
 				return ApiAdapter.execute("create_question", params, data, args);
 			},
 			update: function(params, data, args) {
+				args = ((typeof(args) != "object")? {} : args);
+				args.noCache = ((typeof(args.noCache) != "boolean")? true : args.noCache);
 				return ApiAdapter.execute("update_question", params, data, args);
 			},
 			destroy: function(params, data, args) {
+				args = ((typeof(args) != "object")? {} : args);
+				args.noCache = ((typeof(args.noCache) != "boolean")? true : args.noCache);
 				return ApiAdapter.execute("delete_question", params, data, args);
 			}
 		};

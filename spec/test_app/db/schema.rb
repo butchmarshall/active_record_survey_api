@@ -64,8 +64,9 @@ ActiveRecord::Schema.define(version: 20151002131904) do
 
   create_table "active_record_survey_nodes", force: :cascade do |t|
     t.string   "type"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+    t.integer  "active_record_survey_id"
   end
 
   create_table "active_record_surveys", force: :cascade do |t|

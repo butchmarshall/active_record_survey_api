@@ -27,6 +27,14 @@
 			<tbody>
 				<tr ng-repeat="datum in answers.data">
 					<td>{{datum.attributes.text}}</td>
+					<td>
+						<div class="form-group">
+							<label class="col-sm-4 control-label">Next Question</label>
+							<div class="col-sm-4">
+								<select class="form-control" ng-options="item.id as item.attributes.text for item in questions.data" ng-model="datum.attributes['next-question-id']"></select>
+							</div>
+						</div>
+					</td>
 					<td align="right">
 						<a ng-click="answer_edit(datum.id)" class="btn btn-default" href="#" onclick="return false;">Edit</a>
 						<a ng-click="answer_delete(datum.links.self)" class="btn btn-danger" href="#" onclick="return false;">Delete</a>

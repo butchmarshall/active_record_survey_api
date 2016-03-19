@@ -13,12 +13,11 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 		}
 	end
 
-	describe 'POST to relationships/next-question', :tag => true do
+	describe 'POST to relationships/next-question' do
 		it 'should link the answer and next question' do
 			survey = FactoryGirl.build(:basic_survey)
 
-			q = ActiveRecordSurvey::Node::Question.new(:text => "Question Linkable")
-			survey.build_question(q)
+			q = ActiveRecordSurvey::Node::Question.new(:text => "Question Linkable", :survey => survey)
 			q_a1 = ActiveRecordSurvey::Node::Answer.new(:text => "Question Linkable Answer #1")
 			q_a2 = ActiveRecordSurvey::Node::Answer.new(:text => "Question Linkable Answer #2")
 			q.build_answer(q_a1)
@@ -26,7 +25,7 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 			survey.save
 
 			survey.reload
-			expect(survey.node_maps.length).to eq(34)
+			expect(survey.as_map(:no_ids => true)).to eq([{"text"=>"Question #1", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q1 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #2", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q2 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}, {"text"=>"Q2 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #3", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q3 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}, {"text"=>"Q3 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}]}]}]}, {"text"=>"Q1 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #3", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q3 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}, {"text"=>"Q3 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}]}, {"text"=>"Q1 Answer #3", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}, {"text"=>"Question Linkable", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Question Linkable Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Question Linkable Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}])
 
 			# Link
 			post 'link_next_question', {
@@ -34,14 +33,14 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 			}.to_json, @header_params.merge(:answer_id => 8,:HTTP_ACCEPT_LANGUAGE => 'en')
 
 			survey.reload
-			expect(survey.node_maps.length).to eq(49)
+			expect(survey.as_map(:no_ids => true)).to eq([{"text"=>"Question #1", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q1 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #2", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q2 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}, {"text"=>"Q2 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question Linkable", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Question Linkable Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Question Linkable Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}]}, {"text"=>"Q1 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #3", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q3 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}, {"text"=>"Q3 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}]}, {"text"=>"Q1 Answer #3", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}, {"text"=>"Question #3", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q3 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}, {"text"=>"Q3 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}])
 
 			# Unlink
 			delete 'unlink_next_question', {
 			}.to_json, @header_params.merge(:answer_id => 8,:HTTP_ACCEPT_LANGUAGE => 'en')
 
 			survey.reload
-			expect(survey.node_maps.length).to eq(34)
+			expect(survey.as_map(:no_ids => true)).to eq([{"text"=>"Question #1", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q1 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #2", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q2 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}, {"text"=>"Q2 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}, {"text"=>"Q1 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #3", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q3 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}, {"text"=>"Q3 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}]}, {"text"=>"Q1 Answer #3", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}, {"text"=>"Question #3", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q3 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}, {"text"=>"Q3 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}, {"text"=>"Question Linkable", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Question Linkable Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Question Linkable Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}])
 
 			# Link
 			post 'link_next_question', {
@@ -49,7 +48,7 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 			}.to_json, @header_params.merge(:answer_id => 8,:HTTP_ACCEPT_LANGUAGE => 'en')
 
 			survey.reload
-			expect(survey.node_maps.length).to eq(49)
+			expect(survey.as_map(:no_ids => true)).to eq([{"text"=>"Question #1", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q1 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #2", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q2 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}, {"text"=>"Q2 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question Linkable", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Question Linkable Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Question Linkable Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}]}, {"text"=>"Q1 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #3", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q3 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}, {"text"=>"Q3 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}]}, {"text"=>"Q1 Answer #3", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}, {"text"=>"Question #3", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q3 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}, {"text"=>"Q3 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}])
 
 			# Link
 			post 'link_next_question', {
@@ -57,15 +56,65 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 			}.to_json, @header_params.merge(:answer_id => 7,:HTTP_ACCEPT_LANGUAGE => 'en')
 
 			survey.reload
-			expect(survey.node_maps.length).to eq(67)
+			expect(survey.as_map(:no_ids => true)).to eq([{"text"=>"Question #1", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q1 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #2", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q2 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question Linkable", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Question Linkable Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Question Linkable Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}]}, {"text"=>"Q2 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question Linkable", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Question Linkable Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Question Linkable Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}]}, {"text"=>"Q1 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #3", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q3 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question Linkable", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Question Linkable Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Question Linkable Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}]}, {"text"=>"Q3 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question Linkable", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Question Linkable Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Question Linkable Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}]}]}]}, {"text"=>"Q1 Answer #3", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question Linkable", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Question Linkable Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Question Linkable Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}]}]}, {"text"=>"Question #3", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q3 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question Linkable", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Question Linkable Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Question Linkable Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}]}, {"text"=>"Q3 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question Linkable", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Question Linkable Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Question Linkable Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}]}]}])
 
 			# Unlink
 			delete 'unlink_next_question', {
 			}.to_json, @header_params.merge(:answer_id => 8,:HTTP_ACCEPT_LANGUAGE => 'en')
 
 			survey.reload
-			expect(survey.node_maps.length).to eq(49)
+			expect(survey.as_map(:no_ids => true)).to eq([{"text"=>"Question #1", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q1 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #2", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q2 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question Linkable", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Question Linkable Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Question Linkable Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}]}, {"text"=>"Q2 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}, {"text"=>"Q1 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #3", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q3 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question Linkable", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Question Linkable Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Question Linkable Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}]}, {"text"=>"Q3 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question Linkable", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Question Linkable Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Question Linkable Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}]}]}]}, {"text"=>"Q1 Answer #3", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question Linkable", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Question Linkable Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Question Linkable Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}]}]}, {"text"=>"Question #3", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q3 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question Linkable", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Question Linkable Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Question Linkable Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}]}, {"text"=>"Q3 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question #4", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Q4 Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Q4 Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[{"text"=>"Question Linkable", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Question Linkable Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Question Linkable Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}]}]}]}]}, {"text"=>"Question Linkable", :type=>"ActiveRecordSurvey::Node::Question", :children=>[{"text"=>"Question Linkable Answer #1", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}, {"text"=>"Question Linkable Answer #2", :type=>"ActiveRecordSurvey::Node::Answer", :children=>[]}]}])
+		end
 
+		it 'should not create bad links (infinite loops)' do
+			survey = ActiveRecordSurvey::Survey.create()
+			q1 = survey.questions.build(:type => "ActiveRecordSurvey::Node::Question", :text => "Q1", :survey => survey)
+			q1_a1 = ActiveRecordSurvey::Node::Answer.new(:text => "Q1 A1")
+			q1_a2 = ActiveRecordSurvey::Node::Answer.new(:text => "Q1 A2")
+			q1_a3 = ActiveRecordSurvey::Node::Answer.new(:text => "Q1 A3")
+			q1_a4 = ActiveRecordSurvey::Node::Answer.new(:text => "Q1 A4")
+			q1.build_answer(q1_a1)
+			q1.build_answer(q1_a2)
+			q1.build_answer(q1_a3)
+			q1.build_answer(q1_a4)
+
+			q2 = survey.questions.build(:type => "ActiveRecordSurvey::Node::Question", :text => "Q2", :survey => survey)
+			q2_a1 = ActiveRecordSurvey::Node::Answer.new(:text => "Q2 A1")
+			q2_a2 = ActiveRecordSurvey::Node::Answer.new(:text => "Q2 A2")
+			q2.build_answer(q2_a1)
+			q2.build_answer(q2_a2)
+
+			q3 = survey.questions.build(:type => "ActiveRecordSurvey::Node::Question", :text => "Q3", :survey => survey)
+			q3_a1 = ActiveRecordSurvey::Node::Answer.new(:text => "Q3 A1")
+			q3_a2 = ActiveRecordSurvey::Node::Answer.new(:text => "Q3 A2")
+			q3.build_answer(q3_a1)
+			q3.build_answer(q3_a2)
+
+			q4 = survey.questions.build(:type => "ActiveRecordSurvey::Node::Question", :text => "Q4", :survey => survey)
+			q4_a1 = ActiveRecordSurvey::Node::Answer.new(:text => "Q4 A1")
+			q4_a2 = ActiveRecordSurvey::Node::Answer.new(:text => "Q4 A2")
+			q4.build_answer(q4_a1)
+			q4.build_answer(q4_a2)
+
+			q1_a1.build_link(q3)
+			q1_a2.build_link(q4)
+			q1_a3.build_link(q3)
+			q1_a4.build_link(q3)
+
+			q2_a1.build_link(q1)
+			q2_a2.build_link(q4)
+
+			q3_a1.build_link(q4)
+			q3_a2.build_link(q4)
+			survey.save
+
+			# Link
+			post 'link_next_question', {
+				question_id: q1.id
+			}.to_json, @header_params.merge(:answer_id => q4_a1.id,:HTTP_ACCEPT_LANGUAGE => 'en')
+
+			expect(response.code).to eq("508")
+			expect(response.body).to eq('{"errors":[{"status":"508","code":"LOOP_DETECTED"}]}')
 		end
 	end
 
@@ -159,10 +208,16 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 			{
 			}.to_json, @header_params.merge(:question_id => 1,:HTTP_ACCEPT_LANGUAGE => 'en')
 			json_body = JSON.parse(response.body)
-
-			expect(json_body).to eq({"data"=>[{"id"=>"2", "type"=>"answer_answers", "attributes"=>{"text"=>"It's definitely a Monday."}, "links"=>{"self"=>"/answers/2"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/2/relationships/question", "related"=>"/answers/2/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/2/relationships/next-question", "related"=>"/answers/2/next-question"}}}}, {"id"=>"11", "type"=>"answer_answers", "attributes"=>{"text"=>"Q1 Answer #2"}, "links"=>{"self"=>"/answers/11"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/11/relationships/question", "related"=>"/answers/11/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/11/relationships/next-question", "related"=>"/answers/11/next-question"}}}}, {"id"=>"6", "type"=>"answer_answers", "attributes"=>{"text"=>"Q1 Answer #3"}, "links"=>{"self"=>"/answers/6"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/6/relationships/question", "related"=>"/answers/6/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/6/relationships/next-question", "related"=>"/answers/6/next-question"}}}}], "meta"=>{"total"=>3}})
+			
+			expected_answers = [
+				"It's definitely a Monday.",
+				"Q1 Answer #2",
+				"Q1 Answer #3",
+			]
+			json_body["data"].each_with_index { |answer, index|
+				expect(answer["attributes"]["text"]).to eq(expected_answers[index])
+			}
 			expect(json_body["meta"]["total"]).to eq(3)
-
 
 			I18n.locale = :fr
 
@@ -171,7 +226,15 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 			}.to_json, @header_params.merge(:question_id => 1,:HTTP_ACCEPT_LANGUAGE => 'fr')
 			json_body = JSON.parse(response.body)
 
-			expect(json_body).to eq({"data"=>[{"id"=>"2", "type"=>"answer_answers", "attributes"=>{"text"=>"Il est certainement un lundi."}, "links"=>{"self"=>"/answers/2"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/2/relationships/question", "related"=>"/answers/2/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/2/relationships/next-question", "related"=>"/answers/2/next-question"}}}}, {"id"=>"11", "type"=>"answer_answers", "attributes"=>{"text"=>nil}, "links"=>{"self"=>"/answers/11"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/11/relationships/question", "related"=>"/answers/11/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/11/relationships/next-question", "related"=>"/answers/11/next-question"}}}}, {"id"=>"6", "type"=>"answer_answers", "attributes"=>{"text"=>nil}, "links"=>{"self"=>"/answers/6"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/6/relationships/question", "related"=>"/answers/6/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/6/relationships/next-question", "related"=>"/answers/6/next-question"}}}}], "meta"=>{"total"=>3}})
+			expected_answers = [
+				"Il est certainement un lundi.",
+				nil,
+				nil,
+			]
+			json_body["data"].each_with_index { |answer, index|
+				expect(answer["attributes"]["text"]).to eq(expected_answers[index])
+			}
+			#expect(json_body).to eq({"data"=>[{"id"=>"2", "type"=>"answer_answers", "attributes"=>{"text"=>"Il est certainement un lundi."}, "links"=>{"self"=>"/answers/2"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/2/relationships/question", "related"=>"/answers/2/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/2/relationships/next-question", "related"=>"/answers/2/next-question"}}}}, {"id"=>"11", "type"=>"answer_answers", "attributes"=>{"text"=>nil}, "links"=>{"self"=>"/answers/11"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/11/relationships/question", "related"=>"/answers/11/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/11/relationships/next-question", "related"=>"/answers/11/next-question"}}}}, {"id"=>"6", "type"=>"answer_answers", "attributes"=>{"text"=>nil}, "links"=>{"self"=>"/answers/6"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/6/relationships/question", "related"=>"/answers/6/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/6/relationships/next-question", "related"=>"/answers/6/next-question"}}}}], "meta"=>{"total"=>3}})
 			expect(json_body["meta"]["total"]).to eq(3)
 
 			I18n.locale = :en
@@ -184,21 +247,22 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 			expect(json_body["meta"]["total"]).to eq(2)
 		end
 	end
+
 	describe 'POST create' do
 		it 'should create new answers english', :workonme => true do
 			survey = ActiveRecordSurvey::Survey.create
 
 			# Question 1
 			question1 = ActiveRecordSurvey::Node::Question.create(
-				:text => "How are you doing today?"
+				:text => "How are you doing today?",
+				:survey => survey
 			)
-			survey.build_question(question1)
 
 			# Question 2
 			question2 = ActiveRecordSurvey::Node::Question.create(
-				:text => "What food do you like?"
+				:text => "What food do you like?",
+				:survey => survey
 			)
-			survey.build_question(question2)
 
 			survey.save
 
@@ -275,27 +339,20 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 
 			expect(json_body).to eq({"data"=>{"id"=>"8", "type"=>"boolean_answers", "attributes"=>{"text"=>"Nachos"}, "links"=>{"self"=>"/answers/8"}, "relationships"=>{"question"=>{"links"=>{"self"=>"/answers/8/relationships/question", "related"=>"/answers/8/question"}}, "next-question"=>{"links"=>{"self"=>"/answers/8/relationships/next-question", "related"=>"/answers/8/next-question"}}}}})
 
-			# As Map should 
-			expect(survey.as_map.as_json).to eq([                                                                                                                                                                                                                                                
-				{                                                                                                                                                                                                                                                   
-				  "text" => "How are you doing today?",                                                                                                                                                                                                               
-				  "id" => 1,                                                                                                                                                                                                                                          
-				  "node_id" => 1,                                                                                                                                                                                                                                     
-				  "type" => "ActiveRecordSurvey::Node::Question",                                                                                                                                                                                                     
-				  "children" => [                                                                                                                                                                                                                                     
-					{                                                                                                                                                                                                                                               
-					  "text" => "Great!",                                                                                                                                                                                                                             
-					  "id" => 3,
-					  "node_id" => 3,
+			# As Map should
+			expect(survey.as_map(:no_ids => true).as_json).to eq([
+				{
+				  "text" => "How are you doing today?",
+				  "type" => "ActiveRecordSurvey::Node::Question",
+				  "children" => [
+					{
+					  "text" => "Great!",
 					  "type" => "ActiveRecordSurvey::Node::Answer",
 					  "children" => [
-			  
 					  ]
 					},
 					{
 					  "text" => "Oh, you know, I'm OK.",
-					  "id" => 4,
-					  "node_id" => 4,
 					  "type" => "ActiveRecordSurvey::Node::Answer",
 					  "children" => [
 			  
@@ -303,8 +360,6 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 					},
 					{
 					  "text" => "It's definitely a Monday.",
-					  "id" => 5,
-					  "node_id" => 5,
 					  "type" => "ActiveRecordSurvey::Node::Answer",
 					  "children" => [
 			  
@@ -314,26 +369,18 @@ describe ActiveRecordSurveyApi::AnswersController, :type => :controller, :answer
 				},
 				{
 				  "text" => "What food do you like?",
-				  "id" => 2,
-				  "node_id" => 2,
 				  "type" => "ActiveRecordSurvey::Node::Question",
 				  "children" => [
 					{
 					  "text" => "Pizza",
-					  "id" => 6,
-					  "node_id" => 6,
 					  "type" => "ActiveRecordSurvey::Node::Answer::Boolean",
 					  "children" => [
 						{
 						  "text" => "Spagetti",
-						  "id" => 7,
-						  "node_id" => 7,
 						  "type" => "ActiveRecordSurvey::Node::Answer::Boolean",
 						  "children" => [
 							{
 							  "text" => "Nachos",
-							  "id" => 8,
-							  "node_id" => 8,
 							  "type" => "ActiveRecordSurvey::Node::Answer::Boolean",
 							  "children" => [
 			  
