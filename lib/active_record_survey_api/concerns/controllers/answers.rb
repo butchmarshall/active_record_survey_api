@@ -38,10 +38,22 @@ module ActiveRecordSurveyApi
 
 				def create
 					@answer = new_answer(answer_params)
-					@question.build_answer(@answer)
-					@question.survey.save
 
-					render json: serialize_model(@answer, serializer: ActiveRecordSurveyApi::AnswerSerializer)
+					begin
+						@question.build_answer(@answer)
+						@question.survey.save
+					rescue Exception => $e
+						render json: {
+							errors: [
+								{
+									status: "400",
+									code: "CANNOT_MIX_ANSWER_TYPE"
+								}
+							]
+						}, status: :bad_request
+					else
+						render json: serialize_model(@answer, serializer: ActiveRecordSurveyApi::AnswerSerializer)
+					end
 				end
 
 				def get_next_question
@@ -106,8 +118,11 @@ module ActiveRecordSurveyApi
 					end
 
 					def answer_params
-						json_params.require(:answer).require(:attributes).permit(:text,:type).tap { |whitelisted|
+						json_params.require(:answer).require(:attributes).permit(:text,:type,:sibling_index,"sibling-index".to_sym).tap { |whitelisted|
+							whitelisted[:sibling_index] = whitelisted["sibling-index".to_sym].to_i unless whitelisted["sibling-index".to_sym].nil?
 							whitelisted[:type] = "ActiveRecordSurvey::Node::Answer::#{whitelisted[:type].camelize}" unless whitelisted[:type].nil?
+
+							whitelisted.delete("sibling-index".to_sym)
 						}
 					end
 

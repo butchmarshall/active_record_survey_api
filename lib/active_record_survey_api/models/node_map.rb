@@ -12,7 +12,7 @@ module ActiveRecordSurveyApi
 			module InstanceMethods
 				def as_map_with_text(node_maps = nil)
 					result = {
-						"text" => self.node.text
+						"text" => (self.node.respond_to?(:text)) ? self.node.text : ""
 					}
 					result = result.merge(as_map_without_text(node_maps))
 

@@ -8,6 +8,12 @@ API implementation for [ActiveRecordSurvey](https://github.com/butchmarshall/act
 Release Notes
 ============
 
+**0.0.10**
+ - Can now pass sibling-index attribute when updating answer resources
+
+**0.0.9**
+ - Compatability fixes for ActiveRecordSurvey 0.1.30
+
 **0.0.7**
  - Endpoints for getting/setting/removing an answers next question
 

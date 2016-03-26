@@ -9,6 +9,10 @@ module ActiveRecordSurveyApi
 		has_one :question
 		has_one :next_question
 
+		attributes :sibling_index do
+			object.sibling_index
+		end
+
 		def type
 			"#{object.class.name.demodulize.tableize.singularize.dasherize}_answers"
 		end
