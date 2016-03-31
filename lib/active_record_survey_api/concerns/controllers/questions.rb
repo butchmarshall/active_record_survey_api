@@ -42,6 +42,46 @@ module ActiveRecordSurveyApi
 					render json: serialize_model(@question, serializer: ActiveRecordSurveyApi::QuestionSerializer)
 				end
 
+				def get_next_question
+					@question = question_by_id(params[:question_id])
+					@questions = @question.next_questions
+
+					render json: serialize_models(@questions, serializer: ActiveRecordSurveyApi::QuestionSerializer, meta: { total: @questions.length })
+				end
+
+				def link_next_question
+					@question_from = question_by_id(params[:question_id])
+					@question_to = question_by_id(json_params[:question_id])
+
+					if @question_from.next_questions.length > 0
+						@question_from.remove_link
+					end
+
+					begin
+						@question_from.build_link(@question_to)
+						@question_from.survey.save
+					rescue Exception => $e
+						render json: {
+							errors: [
+								{
+									status: "508",
+									code: "LOOP_DETECTED"
+								}
+							]
+						}, status: :loop_detected
+					else
+						head :no_content
+					end
+				end
+
+				def unlink_next_question
+					@question = question_by_id(params[:question_id])
+					@question.remove_link
+					@question.survey.save
+
+					head :no_content
+				end
+
 				private
 					def all_questions
 						all_questions = []

@@ -12,6 +12,68 @@ describe ActiveRecordSurveyApi::QuestionsController, :type => :controller, :ques
 		}
 	end
 
+	describe 'next-question' do
+		it 'should link/unlink and get the next question' do
+			I18n.locale = :en
+
+			survey = FactoryGirl.build(:basic_survey)
+			survey.save
+
+			map = survey.as_map
+
+			# Get a final answer
+			answer = map[0][:children][2][:children][0][:children][0]
+
+			# Link new question to the final answer
+			answer = ActiveRecordSurvey::Node::Answer.find(answer[:node_id])
+			question_a = ActiveRecordSurvey::Node::Question.new(:text => "New Question #1", :survey => survey)
+			answer.build_link(question_a)
+			survey.save
+
+			# Should be nothing initially
+			get :get_next_question,
+			{
+				:question_id => question_a.id
+			}, @header_params.merge(:HTTP_ACCEPT_LANGUAGE => 'en')
+			json_body = JSON.parse(response.body)
+
+			expect(json_body).to eq({"data"=>[], "meta"=>{"total"=>0}})
+
+			question_b = ActiveRecordSurvey::Node::Question.new(:text => "New Question #2", :survey => survey)
+			question_b.save
+
+			# Link New Question #1 -> New Question #2
+			post :link_next_question,
+			{
+				:question_id => question_b.id
+			}.to_json, @header_params.merge(:question_id => question_a.id, :HTTP_ACCEPT_LANGUAGE => 'en')
+
+			# Get next-question for New Question #1
+			get :get_next_question,
+			{
+				:question_id => question_a.id
+			}, @header_params.merge(:HTTP_ACCEPT_LANGUAGE => 'en')
+			json_body = JSON.parse(response.body)
+
+			# Response to now be New Question #2
+			expect(json_body).to eq({"data"=>[{"id"=>"15", "type"=>"questions", "attributes"=>{"text"=>"New Question #2"}, "links"=>{"self"=>"/questions/15"}, "relationships"=>{"next-question"=>{"links"=>{"self"=>"/questions/15/relationships/next-question", "related"=>"/questions/15/next-question"}}, "answers"=>{"links"=>{"self"=>"/questions/15/relationships/answers", "related"=>"/questions/15/answers"}}}}], "meta"=>{"total"=>1}})
+
+			delete :unlink_next_question,
+			{
+				:question_id => question_a.id
+			}, @header_params.merge(:HTTP_ACCEPT_LANGUAGE => 'en')
+
+			# Get next-question for New Question #1
+			get :get_next_question,
+			{
+				:question_id => question_a.id
+			}, @header_params.merge(:HTTP_ACCEPT_LANGUAGE => 'en')
+			json_body = JSON.parse(response.body)
+
+			expect(json_body).to eq({"data"=>[], "meta"=>{"total"=>0}})
+		end
+	end
+
 	describe 'GET index' do
 		it 'should retrieve all questions for a survey' do
 			I18n.locale = :en
@@ -103,7 +165,7 @@ describe ActiveRecordSurveyApi::QuestionsController, :type => :controller, :ques
 
 				json_body = JSON.parse(response.body)
 
-				expect(json_body).to eq({"data" => {"id"=>"1", "type"=>"questions", "attributes"=>{"text"=>"How are you today?"}, "links"=>{"self"=>"/questions/1"}, "relationships"=>{"answers"=>{"links"=>{"self"=>"/questions/1/relationships/answers", "related"=>"/questions/1/answers"}}}}})
+				expect(json_body).to eq({"data"=>{"id"=>"1", "type"=>"questions", "attributes"=>{"text"=>"How are you today?"}, "links"=>{"self"=>"/questions/1"}, "relationships"=>{"next-question"=>{"links"=>{"self"=>"/questions/1/relationships/next-question", "related"=>"/questions/1/next-question"}}, "answers"=>{"links"=>{"self"=>"/questions/1/relationships/answers", "related"=>"/questions/1/answers"}}}}})
 
 				post :create,
 				{
@@ -116,7 +178,7 @@ describe ActiveRecordSurveyApi::QuestionsController, :type => :controller, :ques
 
 				json_body = JSON.parse(response.body)
 
-				expect(json_body).to eq({"data"=>{"id"=>"2", "type"=>"questions", "attributes"=>{"text"=>"What is your favorite colour?"}, "links"=>{"self"=>"/questions/2"}, "relationships"=>{"answers"=>{"links"=>{"self"=>"/questions/2/relationships/answers", "related"=>"/questions/2/answers"}}}}})
+				expect(json_body).to eq({"data"=>{"id"=>"2", "type"=>"questions", "attributes"=>{"text"=>"What is your favorite colour?"}, "links"=>{"self"=>"/questions/2"}, "relationships"=>{"next-question"=>{"links"=>{"self"=>"/questions/2/relationships/next-question", "related"=>"/questions/2/next-question"}}, "answers"=>{"links"=>{"self"=>"/questions/2/relationships/answers", "related"=>"/questions/2/answers"}}}}})
 
 				survey.reload
 				expect(survey.questions.length).to eq(2)
@@ -169,7 +231,7 @@ describe ActiveRecordSurveyApi::QuestionsController, :type => :controller, :ques
 
 				# English request should yield no text!
 				json_body = JSON.parse(response.body)
-				expect(json_body).to eq({"data"=>[{"id"=>"1", "type"=>"questions", "attributes"=>{"text"=>nil}, "links"=>{"self"=>"/questions/1"}, "relationships"=>{"answers"=>{"links"=>{"self"=>"/questions/1/relationships/answers", "related"=>"/questions/1/answers"}}}}, {"id"=>"4", "type"=>"questions", "attributes"=>{"text"=>nil}, "links"=>{"self"=>"/questions/4"}, "relationships"=>{"answers"=>{"links"=>{"self"=>"/questions/4/relationships/answers", "related"=>"/questions/4/answers"}}}}, {"id"=>"9", "type"=>"questions", "attributes"=>{"text"=>nil}, "links"=>{"self"=>"/questions/9"}, "relationships"=>{"answers"=>{"links"=>{"self"=>"/questions/9/relationships/answers", "related"=>"/questions/9/answers"}}}}], "meta"=>{"total"=>3}})
+				expect(json_body).to eq({"data"=>[{"id"=>"1", "type"=>"questions", "attributes"=>{"text"=>nil}, "links"=>{"self"=>"/questions/1"}, "relationships"=>{"next-question"=>{"links"=>{"self"=>"/questions/1/relationships/next-question", "related"=>"/questions/1/next-question"}}, "answers"=>{"links"=>{"self"=>"/questions/1/relationships/answers", "related"=>"/questions/1/answers"}}}}, {"id"=>"4", "type"=>"questions", "attributes"=>{"text"=>nil}, "links"=>{"self"=>"/questions/4"}, "relationships"=>{"next-question"=>{"links"=>{"self"=>"/questions/4/relationships/next-question", "related"=>"/questions/4/next-question"}}, "answers"=>{"links"=>{"self"=>"/questions/4/relationships/answers", "related"=>"/questions/4/answers"}}}}, {"id"=>"9", "type"=>"questions", "attributes"=>{"text"=>nil}, "links"=>{"self"=>"/questions/9"}, "relationships"=>{"next-question"=>{"links"=>{"self"=>"/questions/9/relationships/next-question", "related"=>"/questions/9/next-question"}}, "answers"=>{"links"=>{"self"=>"/questions/9/relationships/answers", "related"=>"/questions/9/answers"}}}}], "meta"=>{"total"=>3}})
 
 				request.headers[:HTTP_ACCEPT_LANGUAGE] = :fr
 				get :index, {
@@ -178,7 +240,7 @@ describe ActiveRecordSurveyApi::QuestionsController, :type => :controller, :ques
 
 				# French request should yield the french text!
 				json_body = JSON.parse(response.body)
-				expect(json_body).to eq({"data"=>[{"id"=>"1", "type"=>"questions", "attributes"=>{"text"=>"How are you doing today?"}, "links"=>{"self"=>"/questions/1"}, "relationships"=>{"answers"=>{"links"=>{"self"=>"/questions/1/relationships/answers", "related"=>"/questions/1/answers"}}}}, {"id"=>"4", "type"=>"questions", "attributes"=>{"text"=>"Select your favorite foods"}, "links"=>{"self"=>"/questions/4"}, "relationships"=>{"answers"=>{"links"=>{"self"=>"/questions/4/relationships/answers", "related"=>"/questions/4/answers"}}}}, {"id"=>"9", "type"=>"questions", "attributes"=>{"text"=>"What are you doing today?"}, "links"=>{"self"=>"/questions/9"}, "relationships"=>{"answers"=>{"links"=>{"self"=>"/questions/9/relationships/answers", "related"=>"/questions/9/answers"}}}}], "meta"=>{"total"=>3}})
+				expect(json_body).to eq({"data"=>[{"id"=>"1", "type"=>"questions", "attributes"=>{"text"=>"How are you doing today?"}, "links"=>{"self"=>"/questions/1"}, "relationships"=>{"next-question"=>{"links"=>{"self"=>"/questions/1/relationships/next-question", "related"=>"/questions/1/next-question"}}, "answers"=>{"links"=>{"self"=>"/questions/1/relationships/answers", "related"=>"/questions/1/answers"}}}}, {"id"=>"4", "type"=>"questions", "attributes"=>{"text"=>"Select your favorite foods"}, "links"=>{"self"=>"/questions/4"}, "relationships"=>{"next-question"=>{"links"=>{"self"=>"/questions/4/relationships/next-question", "related"=>"/questions/4/next-question"}}, "answers"=>{"links"=>{"self"=>"/questions/4/relationships/answers", "related"=>"/questions/4/answers"}}}}, {"id"=>"9", "type"=>"questions", "attributes"=>{"text"=>"What are you doing today?"}, "links"=>{"self"=>"/questions/9"}, "relationships"=>{"next-question"=>{"links"=>{"self"=>"/questions/9/relationships/next-question", "related"=>"/questions/9/next-question"}}, "answers"=>{"links"=>{"self"=>"/questions/9/relationships/answers", "related"=>"/questions/9/answers"}}}}], "meta"=>{"total"=>3}})
 			end
 		end
 	end

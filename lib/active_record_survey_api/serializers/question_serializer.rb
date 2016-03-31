@@ -3,5 +3,6 @@ module ActiveRecordSurveyApi
 		attribute :text
 
 		has_many :answers
+		has_one :next_question
 	end
 end

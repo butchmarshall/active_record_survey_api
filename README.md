@@ -8,6 +8,9 @@ API implementation for [ActiveRecordSurvey](https://github.com/butchmarshall/act
 Release Notes
 ============
 
+**0.0.11**
+ - Now supports direct question -> question relationships
+
 **0.0.10**
  - Can now pass sibling-index attribute when updating answer resources
 
