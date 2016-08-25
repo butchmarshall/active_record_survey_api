@@ -11,7 +11,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151002131904) do
+ActiveRecord::Schema.define(version: 20160408032206) do
+
+  create_table "active_record_survey_api_node_map_group_translations", force: :cascade do |t|
+    t.integer  "active_record_survey_api_node_map_group_id",              null: false
+    t.string   "locale",                                                  null: false
+    t.datetime "created_at",                                              null: false
+    t.datetime "updated_at",                                              null: false
+    t.string   "text",                                       default: "", null: false
+  end
+
+  add_index "active_record_survey_api_node_map_group_translations", ["active_record_survey_api_node_map_group_id"], name: "index_b498d8de7f6d8f1068770987d74f791d985628f2"
+  add_index "active_record_survey_api_node_map_group_translations", ["locale"], name: "index_ce3a77b5bc1f5d7186fb8462af6a4ead5150a0f7"
+
+  create_table "active_record_survey_api_node_map_groups", force: :cascade do |t|
+    t.integer  "active_record_survey_id"
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
 
   create_table "active_record_survey_instance_nodes", force: :cascade do |t|
     t.integer  "active_record_survey_instance_id"
@@ -30,13 +47,14 @@ ActiveRecord::Schema.define(version: 20151002131904) do
   create_table "active_record_survey_node_maps", force: :cascade do |t|
     t.integer  "active_record_survey_node_id"
     t.integer  "parent_id"
-    t.integer  "lft",                                      null: false
-    t.integer  "rgt",                                      null: false
-    t.integer  "depth",                        default: 0, null: false
-    t.integer  "children_count",               default: 0, null: false
+    t.integer  "lft",                                                    null: false
+    t.integer  "rgt",                                                    null: false
+    t.integer  "depth",                                      default: 0, null: false
+    t.integer  "children_count",                             default: 0, null: false
     t.integer  "active_record_survey_id"
-    t.datetime "created_at",                               null: false
-    t.datetime "updated_at",                               null: false
+    t.datetime "created_at",                                             null: false
+    t.datetime "updated_at",                                             null: false
+    t.integer  "active_record_survey_api_node_map_group_id"
   end
 
   add_index "active_record_survey_node_maps", ["lft"], name: "index_active_record_survey_node_maps_on_lft"

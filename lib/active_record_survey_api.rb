@@ -1,5 +1,6 @@
 require "http_accept_language"
 require "active_record_survey"
+require "active_record_survey/node_map_group"
 require "globalize"
 
 require "active_record_survey_api/engine"
@@ -8,6 +9,7 @@ require "active_record_survey_api/concerns/controllers/surveys"
 require "active_record_survey_api/concerns/controllers/questions"
 require "active_record_survey_api/concerns/controllers/answers"
 require "active_record_survey_api/concerns/controllers/node_maps"
+require "active_record_survey_api/concerns/controllers/node_map_groups"
 require "active_record_survey_api/concerns/controllers/nodes"
 require "active_record_survey_api/concerns/controllers/instances"
 require "active_record_survey_api/concerns/controllers/instance_nodes"
@@ -17,12 +19,14 @@ require "active_record_survey_api/models/node_map"
 require "active_record_survey_api/models/node/question"
 require "active_record_survey_api/models/node/answer"
 require "active_record_survey_api/models/instance"
+require "active_record_survey_api/models/node_map_group"
 
 require "active_record_survey_api/serializers/base_serializer"
 require "active_record_survey_api/serializers/answer_serializer"
 require "active_record_survey_api/serializers/instance_serializer"
 require "active_record_survey_api/serializers/instance_node_serializer"
 require "active_record_survey_api/serializers/node_map_serializer"
+require "active_record_survey_api/serializers/node_map_group_serializer"
 require "active_record_survey_api/serializers/node_serializer"
 require "active_record_survey_api/serializers/question_serializer"
 require "active_record_survey_api/serializers/survey_serializer"
@@ -35,6 +39,8 @@ ActiveRecordSurvey::NodeMap.send(:include, ActiveRecordSurveyApi::Models::NodeMa
 ActiveRecordSurvey::Node::Question.send(:include, ActiveRecordSurveyApi::Models::Node::Question)
 ActiveRecordSurvey::Node::Answer.send(:include, ActiveRecordSurveyApi::Models::Node::Answer)
 ActiveRecordSurvey::Instance.send(:include, ActiveRecordSurveyApi::Models::Instance)
+
+ActiveRecordSurvey::NodeMapGroup.send(:include, ActiveRecordSurveyApi::Models::NodeMapGroup)
 
 # Fallback support
 #require "i18n/backend/fallbacks" 

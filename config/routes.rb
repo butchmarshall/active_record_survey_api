@@ -7,7 +7,9 @@ ActiveRecordSurveyApi::Engine.routes.draw do
 		resources :questions do
 			resources :answers
 		end
+		resources :node_map_groups, as: "pages"
 	end
+	resources :node_map_groups, as: "pages"
 	resources :questions do
 		resources :answers
 
