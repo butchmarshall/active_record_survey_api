@@ -8,7 +8,6 @@ module ActiveRecordSurveyApi
 					@node_map_group = new_node_map_group
 					@node_map_group.survey = @survey
 					@node_map_group.attributes = node_map_group_params
-					@node_map_group.save
 
 					if !@node_map_group.save
 						render json: JSONAPI::Serializer.serialize_errors(@node_map_group.errors), :status => 409

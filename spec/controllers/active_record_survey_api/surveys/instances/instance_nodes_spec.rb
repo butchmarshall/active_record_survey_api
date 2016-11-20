@@ -3,7 +3,7 @@ require 'spec_helper'
 describe ActiveRecordSurveyApi::InstanceNodesController, :type => :controller, :instance_nodes_api => true do
 	routes { ActiveRecordSurveyApi::Engine.routes }
 
-	describe 'GET create' do
+	describe 'POST create' do
 		it 'should create a new instance' do
 			survey = FactoryGirl.build(:basic_survey)
 			survey.save

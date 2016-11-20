@@ -120,7 +120,7 @@ module ActiveRecordSurveyApi
 					def answer_params
 						json_params.require(:answer).require(:attributes).permit(:text,:type,:sibling_index,"sibling-index".to_sym).tap { |whitelisted|
 							whitelisted[:sibling_index] = whitelisted["sibling-index".to_sym].to_i unless whitelisted["sibling-index".to_sym].nil?
-							whitelisted[:type] = "ActiveRecordSurvey::Node::Answer::#{whitelisted[:type].camelize}" unless whitelisted[:type].nil?
+							whitelisted[:type] = "ActiveRecordSurvey::Node::Answer#{ ((whitelisted[:type].to_s.empty?) ? "" : "::") }#{whitelisted[:type].camelize}" unless whitelisted[:type].nil?
 
 							whitelisted.delete("sibling-index".to_sym)
 						}
