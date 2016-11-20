@@ -12,6 +12,32 @@ describe ActiveRecordSurveyApi::SurveysController, :type => :controller, :survey
 		}
 	end
 
+	describe 'GET edges' do
+		it 'should get edges of a survey' do
+			survey = FactoryGirl.build(:basic_survey)
+			survey.save
+
+			get :edges, {
+				:survey_id => survey.id
+			}, @header_params.merge(:survey_id => survey.id, :HTTP_ACCEPT_LANGUAGE => 'en')
+
+			#expect(response.body).to eq('[{"source":1,"target":2},{"source":2,"target":3},{"source":3,"target":4},{"source":4,"target":5},{"source":5,"target":6},{"source":5,"target":7},{"source":3,"target":8},{"source":8,"target":9},{"source":9,"target":10},{"source":10,"target":5},{"source":9,"target":11},{"source":11,"target":5},{"source":1,"target":12},{"source":12,"target":9},{"source":1,"target":13},{"source":13,"target":5}]')
+		end
+	end
+
+	describe 'GET nodes' do
+		it 'should get all nodes of a survey', :focus => true do
+			survey = FactoryGirl.build(:basic_survey)
+			survey.save
+
+			get :nodes, {
+				:survey_id => survey.id
+			}, @header_params.merge(:survey_id => survey.id, :HTTP_ACCEPT_LANGUAGE => 'en')
+
+			#puts response.body
+		end
+	end
+
 	describe 'POST create' do
 		it 'should create a new survey' do
 			post :create,

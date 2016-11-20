@@ -38,6 +38,29 @@ module ActiveRecordSurveyApi
 					render json: serialize_model(@survey, serializer: ActiveRecordSurveyApi::SurveySerializer)
 				end
 
+				def edges
+					@survey = survey_by_id(params[:survey_id])
+
+					render json: @survey.edges
+				end
+
+				def nodes
+					@survey = survey_by_id(params[:survey_id])
+
+					nodes = @survey.nodes
+					questions = nodes.select { |i|
+						i.class.ancestors.include?(::ActiveRecordSurvey::Node::Question)
+					}
+					answers = nodes.select { |i|
+						i.class.ancestors.include?(::ActiveRecordSurvey::Node::Answer)
+					}
+
+					questions = serialize_models(questions, serializer: ActiveRecordSurveyApi::QuestionSerializer, meta: { total: questions.length })
+					answers = serialize_models(answers, serializer: ActiveRecordSurveyApi::QuestionSerializer, meta: { total: answers.length })
+
+					render json: { questions: questions, answers: answers }
+				end
+
 				private 
 					def all_surveys
 						ActiveRecordSurvey::Survey.all

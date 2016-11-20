@@ -1,6 +1,9 @@
 ActiveRecordSurveyApi::Engine.routes.draw do
 	resources :instances
 	resources :surveys do
+		get 'nodes', to: 'surveys#nodes', as: "nodes"
+		get 'edges', to: 'surveys#edges', as: "edges"
+
 		resources :instances do
 			resources :instance_nodes
 		end
