@@ -56,7 +56,7 @@ module ActiveRecordSurveyApi
 					}
 
 					questions = serialize_models(questions, serializer: ActiveRecordSurveyApi::QuestionSerializer, meta: { total: questions.length })
-					answers = serialize_models(answers, serializer: ActiveRecordSurveyApi::QuestionSerializer, meta: { total: answers.length })
+					answers = serialize_models(answers, serializer: ActiveRecordSurveyApi::AnswerSerializer, meta: { total: answers.length })
 
 					render json: { questions: questions, answers: answers }
 				end
