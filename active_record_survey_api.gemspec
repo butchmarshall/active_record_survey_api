@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
 	spec.add_dependency "rails", "~> 4.2.4"
 	#spec.add_dependency "active_model_serializers" , "0.10.2"
 	spec.add_dependency "jsonapi-serializers"
-	spec.add_dependency "active_record_survey", ">= 0.1.43"
+	spec.add_dependency "active_record_survey", ">= 0.1.45"
 	spec.add_dependency "active_record_survey-node_map_group", ">= 0.0.4"
 	spec.add_dependency "globalize", "> 4"
 	spec.add_dependency "http_accept_language"

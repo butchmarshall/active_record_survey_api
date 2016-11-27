@@ -26,7 +26,7 @@ describe ActiveRecordSurveyApi::SurveysController, :type => :controller, :survey
 	end
 
 	describe 'GET nodes' do
-		it 'should get all nodes of a survey', :focus => true do
+		it 'should get all nodes of a survey' do
 			survey = FactoryGirl.build(:basic_survey)
 			survey.save
 

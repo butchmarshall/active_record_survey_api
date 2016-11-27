@@ -29,12 +29,31 @@ module ActiveRecordSurveyApi
 
 				def update
 					@question = question_by_id(params[:id])
-					@question.update_attributes(question_params)
+					if !question_params[:type].nil?
+						begin
+							@question.update_question_type(question_params[:type].to_s.constantize)
+							@question.survey.save
+						rescue Exception => $e
+							render json: {
+								errors: [
+									{
+										status: "422",
+										code: "422"
+									}
+								]
+							}, status: :loop_detected
+							return
+						end
+					end
+
+					@question.update_attributes(question_params.except(:type))
 
 					render json: serialize_model(@question, serializer: ActiveRecordSurveyApi::QuestionSerializer)
 				end
 
 				def create
+					question_params.delete(:type) unless question_params[:type].nil?  # cannot set type through create
+
 					@question = new_question(question_params)
 					@question.survey = @survey
 					@question.save
@@ -102,7 +121,9 @@ module ActiveRecordSurveyApi
 					end
 
 					def question_params
-						json_params.require(:question).require(:attributes).permit(:text)
+						json_params.require(:question).require(:attributes).permit(:text,:type).tap { |whitelisted|
+							whitelisted[:type] = "ActiveRecordSurvey::Node::Answer#{ ((whitelisted[:type].to_s.empty?) ? "" : "::") }#{whitelisted[:type].camelize}" unless whitelisted[:type].nil?
+						}
 					end
 
 					def find_survey

@@ -11,6 +11,8 @@ module ActiveRecordSurveyApi
 				end
 
 				def update
+					answer_params.delete(:type) unless answer_params[:type].nil?  # cannot set type through update
+
 					@answer = answer_by_id(params[:id])
 					@answer.update_attributes(answer_params)
 
