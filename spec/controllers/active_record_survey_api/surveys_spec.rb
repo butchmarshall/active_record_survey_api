@@ -20,8 +20,9 @@ describe ActiveRecordSurveyApi::SurveysController, :type => :controller, :survey
 			get :edges, {
 				:survey_id => survey.id
 			}, @header_params.merge(:survey_id => survey.id, :HTTP_ACCEPT_LANGUAGE => 'en')
+			json_body = JSON.parse(response.body)
 
-			#expect(response.body).to eq('[{"source":1,"target":2},{"source":2,"target":3},{"source":3,"target":4},{"source":4,"target":5},{"source":5,"target":6},{"source":5,"target":7},{"source":3,"target":8},{"source":8,"target":9},{"source":9,"target":10},{"source":10,"target":5},{"source":9,"target":11},{"source":11,"target":5},{"source":1,"target":12},{"source":12,"target":9},{"source":1,"target":13},{"source":13,"target":5}]')
+			expect(json_body.length).to eq(16)
 		end
 	end
 

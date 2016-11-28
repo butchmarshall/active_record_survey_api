@@ -47,7 +47,7 @@ module ActiveRecordSurveyApi
 				def nodes
 					@survey = survey_by_id(params[:survey_id])
 
-					nodes = @survey.nodes
+					nodes = @survey.nodes.includes(:translations)
 					questions = nodes.select { |i|
 						i.class.ancestors.include?(::ActiveRecordSurvey::Node::Question)
 					}
